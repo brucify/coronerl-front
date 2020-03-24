@@ -5,6 +5,7 @@ class Corona extends React.Component {
   constructor(props) {
     super(props);
     this.chartReference = React.createRef();
+    this.chartTypes = props.chartTypes;
     this.chartColors = {
       red: 'rgb(255, 99, 132)',
       orange: 'rgb(255, 159, 64)',
@@ -23,8 +24,7 @@ class Corona extends React.Component {
        }
     };
     this.state = {
-      chartData: chartData(props.data, props.type, this.chartColors),
-      type: props.type
+      allChartData: props.chartData
     };
   }
 
@@ -34,7 +34,7 @@ class Corona extends React.Component {
       .then(
         (result) => {
           this.setState({
-            chartData: chartData(result, this.state.type, this.chartColors)
+            allChartData: result
           });
         },
         // Note: it's important to handle errors here
@@ -50,51 +50,59 @@ class Corona extends React.Component {
   }
 
   render() {
-    let title;
-    switch (this.state.type) {
-      case "confirmed":
-        title = "COVID-19 total reported cases";
-        break;
-      case "death":
-        title = "COVID-19 reported deaths";
-        break;
-      case "recovered":
-        title = "COVID-19 total recovered cases";
-        break;
-      case "active":
-        title = "COVID-19 remaining cases";
-        break;
-      case "confirmed_daily":
-        title = "COVID-19 new reported cases per day";
-        break;
-      case "death_daily":
-        title = "COVID-19 new deaths per day";
-        break;
-      default:
-        title = "COVID-19 data";
-        break;
-    }
-    let chart;
-    if (this.state.type === "confirmed_daily") {
-      chart = <Line data={this.state.chartData}
-                    options={this.chartOptions}/>
-    } else {
-      chart = <Line data={this.state.chartData}
-                    options={this.chartOptions}/>
-    }
-
-    return (
-      <div>
-        <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
-        <div className="chart-container">{chart}</div>
-      </div>
-    )
+    return this.chartTypes.map((chartType) => {
+      return oneChart(chartType, this.state.allChartData,
+                                 this.chartOptions,
+                                 this.chartColors)
+    });
   }
 }
 
-function chartData(data, type, chartColors) {  return {
-    labels: data.months,
-    datasets: data.numbers.map((x, index) => {
+function oneChart(chartType, allChartData, chartOptions, chartColors) {
+  let title;
+  switch (chartType) {
+    case "confirmed":
+      title = "COVID-19 total reported cases";
+      break;
+    case "death":
+      title = "COVID-19 reported deaths";
+      break;
+    case "recovered":
+      title = "COVID-19 total recovered cases";
+      break;
+    case "active":
+      title = "COVID-19 remaining cases";
+      break;
+    case "confirmed_daily":
+      title = "COVID-19 new reported cases per day";
+      break;
+    case "death_daily":
+      title = "COVID-19 new deaths per day";
+      break;
+    default:
+      title = "COVID-19 data";
+      break;
+  }
+  let chart;
+  var singleChartData = chartData(allChartData, chartType, chartColors);
+  if (chartType === "confirmed_daily") {
+    chart = <Line data={singleChartData} options={chartOptions}/>
+  } else {
+    chart = <Line data={singleChartData} options={chartOptions}/>
+  }
+
+  return (
+    <div className="chart">
+      <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
+      <div className="chart-container">{chart}</div>
+    </div>
+  )
+}
+
+function chartData(allChartData, type, chartColors) {
+  return {
+    labels: allChartData.months,
+    datasets: allChartData.numbers.map((x, index) => {
       var colorNames = Object.keys(chartColors);
       var colorName = colorNames[index % colorNames.length];
       var newColor = chartColors[colorName];

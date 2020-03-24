@@ -4,24 +4,7 @@ import Corona from '../components/Corona';
 
 const IndexPage = () => (
   <Layout>
-    <div className="chart" id="corona2">
-      <Corona data={chartData} type="death" />
-    </div>
-    <div className="chart" id="corona4">
-      <Corona data={chartData} type="death_daily" />
-    </div>
-    <div className="chart" id="corona1">
-      <Corona data={chartData} type="active" />
-    </div>
-    <div className="chart" id="corona4">
-      <Corona data={chartData} type="confirmed_daily" />
-    </div>
-    <div className="chart" id="corona5">
-      <Corona data={chartData} type="confirmed" />
-    </div>
-    <div className="chart" id="corona3">
-      <Corona data={chartData} type="recovered" />
-    </div>
+    <Corona chartData={chartData} chartTypes={chartTypes} />
   </Layout>
 )
 
@@ -33,5 +16,13 @@ const chartData = {
      {country: "XXXX",
       confirmed: [50, 32, 44, 51, 66, 75, 80]}]
 };
+
+const chartTypes = [ "death"
+                   , "death_daily"
+                   , "active"
+                   , "confirmed_daily"
+                   , "confirmed"
+                   , "recovered"
+                   ];
 
 export default IndexPage

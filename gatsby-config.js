@@ -6,4 +6,9 @@
 
 module.exports = {
   /* Your site config here */
+  siteMetadata: {
+    title: "CoronaStats",
+    siteUrl: "https://www.coronastats.nu",
+    description: "Corona Virus COVID-19 country stats",
+  },
 }
