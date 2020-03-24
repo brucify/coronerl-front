@@ -5,7 +5,13 @@ class Corona extends React.Component {
   constructor(props) {
     super(props);
     this.chartReference = React.createRef();
-    this.chartTypes = props.chartTypes;
+    this.chartTypes = [ "death"
+                      , "death_daily"
+                      , "active"
+                      , "confirmed_daily"
+                      , "confirmed"
+                      , "recovered"
+                      ];
     this.chartColors = {
       red: 'rgb(255, 99, 132)',
       orange: 'rgb(255, 159, 64)',
