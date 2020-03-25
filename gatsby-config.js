@@ -9,6 +9,7 @@ module.exports = {
   siteMetadata: {
     title: "CoronaStats",
     siteUrl: "https://www.coronastats.nu",
-    description: "Corona Virus COVID-19 country stats",
+    description: "Corona Virus COVID-19 country stats"
   },
+  plugins: [`gatsby-plugin-react-helmet`]
 }

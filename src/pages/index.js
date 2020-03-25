@@ -1,6 +1,6 @@
 import React from "react"
 import Layout from "../components/layout"
-import Corona from '../components/Corona';
+import Corona from '../components/Corona'
 
 const IndexPage = () => (
   <Layout>
