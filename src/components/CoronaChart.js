@@ -1,11 +1,17 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
+import update from 'immutability-helper';
 
 class CoronaChart extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      allChartData: this.props.allChartData
+    };
+    this.isDayZero = false;
     this.chartColors = {
       red: 'rgb(255, 99, 132)',
       orange: 'rgb(255, 159, 64)',
@@ -25,33 +31,112 @@ class CoronaChart extends React.Component {
     };
   }
 
+  updateData(result) {
+    this.setState({
+      allChartData: result
+    });
+  }
+
+  toggleDayZeroView(chartType, numDays) {
+    if (this.allChartDataOriginal === undefined) {
+      this.allChartDataOriginal = this.state.allChartData;
+    }
+    if (this.allChartDataDayZero === undefined) {
+      this.allChartDataDayZero = this.dayZeroView(this.allChartDataOriginal, chartType, numDays);
+    }
+
+    if (!this.isDayZero) {
+      this.setState({ allChartData: this.allChartDataDayZero });
+      this.allChartDataPrevious = this.state.allChartData;
+      this.isDayZero = true;
+    } else {
+      this.setState({ allChartData: this.allChartDataOriginal });
+      this.allChartDataPrevious = this.state.allChartData;
+      this.isDayZero = !this.isDayZero;
+    }
+  }
+
+  updateDayZeroView(chartType, numDays) {
+    if (this.isDayZero) {
+      this.allChartDataDayZero = undefined;
+      console.log("updateDayZeroView" + numDays);
+      this.toggleDayZeroView(chartType, numDays);
+      this.toggleDayZeroView(chartType, numDays);
+    }
+  }
+
+  dayZeroView(allChartData0, chartType, numDays) {
+    console.log("dayZeroView"+ numDays);
+
+    return update(allChartData0, {
+      numbers: {
+        $set: allChartData0.numbers.map((obj) => {
+          var x = obj[chartType].findIndex((e) => e > numDays);
+          var sliced = obj[chartType].slice(x, obj[chartType].length);
+          // obj[chartType] = sliced;
+          // return obj;
+          return update(obj, {[chartType]: {$set: sliced}})
+        })
+      },
+      months: {
+        $set: Array(allChartData0.months.length).fill().map((x,i)=> {
+            return "Day "+i;
+        })
+      }
+    });
+  }
+
   render() {
-    return oneChart(this.props.allChartData,
-                    this.props.chartType,
-                    this.chartOptions,
-                    this.chartColors)
+    var title = makeTitle(this.props.chartType);
+    var chart = makeChart(this.state.allChartData,
+                          this.props.chartType,
+                          this.chartOptions,
+                          this.chartColors);
+    return (
+      <div className="chart-section">
+        <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
+        <div className="chart-buttons">
+          <FormControlLabel
+            control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType, 100)} />}
+            label="Day 0"
+          /> since
+          <TextField
+            id="standard-number"
+            size="small"
+            // variant="outlined"
+            defaultValue="100"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
+            style={{width: '35px', marginLeft: '5px'}}
+          /> cases
+        </div>
+        <div className="chart-container">{chart}</div>
+      </div>
+    )
   }
 }
 
 export default CoronaChart;
 
-function oneChart(allChartData, chartType, chartOptions, chartColors) {
+function makeTitle(chartType) {
   let title;
   switch (chartType) {
     case "confirmed":
-      title = "COVID-19 total reported cases";
+      title = "COVID-19 cumulative reported cases";
       break;
     case "death":
-      title = "COVID-19 reported deaths";
+      title = "COVID-19 cumulative deaths";
       break;
     case "recovered":
-      title = "COVID-19 total recovered cases";
+      title = "COVID-19 cumulative recovered cases";
       break;
     case "active":
       title = "COVID-19 remaining cases";
       break;
     case "confirmed_daily":
-      title = "COVID-19 new reported cases per day";
+      title = "COVID-19 new cases per day";
       break;
     case "death_daily":
       title = "COVID-19 new deaths per day";
@@ -60,27 +145,18 @@ function oneChart(allChartData, chartType, chartOptions, chartColors) {
       title = "COVID-19 data";
       break;
   }
+  return title;
+}
+
+function makeChart(allChartData, chartType, chartOptions, chartColors) {
   let chart;
   var singleChartData = chartData(allChartData, chartType, chartColors);
   if (chartType === "confirmed_daily") {
-    chart = <Line data={singleChartData} options={chartOptions}/>
+    chart = <Line data={singleChartData} options={chartOptions} redraw/>
   } else {
-    chart = <Line data={singleChartData} options={chartOptions}/>
+    chart = <Line data={singleChartData} options={chartOptions} redraw/>
   }
-
-  return (
-    <div className="chart-section">
-      <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
-      <div className="chart-buttons">
-        <FormControlLabel
-          control={<Switch size="small" onChange={() => console.log("onChange")} />}
-          label="Day 0"
-        />
-      </div>
-      <div className="chart-container">{chart}</div>
-
-    </div>
-  )
+  return chart;
 }
 
 function chartData(allChartData, type, chartColors) {

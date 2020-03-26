@@ -4,7 +4,9 @@ import Corona from '../components/Corona'
 
 const IndexPage = () => (
   <Layout>
-    <Corona chartData={chartData} />
+    <div className="all-charts">
+      <Corona allChartData={chartData} />
+    </div>
   </Layout>
 )
 

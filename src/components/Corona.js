@@ -4,26 +4,25 @@ import CoronaChart from '../components/CoronaChart'
 class Corona extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      allChartData: props.chartData
-    };
+    this.allChartDataPrevious = undefined;
     this.chartReference = React.createRef();
-    this.chartTypes = [ "death"
-                      , "death_daily"
-                      , "active"
-                      , "confirmed_daily"
-                      , "confirmed"
-                      , "recovered"
+    this.chartTypes = [ {type: "death", ref: React.createRef()}
+                      , {type: "death_daily", ref: React.createRef()}
+                      , {type: "confirmed", ref: React.createRef()}
+                      , {type: "confirmed_daily", ref: React.createRef()}
+                      // , {type: "recovered", ref: React.createRef()}
+                      // , {type: "active", ref: React.createRef()}
                       ];
   }
 
   componentDidMount() {
-    fetch("http://localhost:8080/hello")
+    fetch("https://api.coronastats.nu/hello")
       .then(res => res.json())
       .then(
         (result) => {
-          this.setState({
-            allChartData: result
+          this.chartTypes.map((o) => {
+            o.ref.current.updateData(result);
+            return o;
           });
         },
         // Note: it's important to handle errors here
@@ -39,10 +38,11 @@ class Corona extends React.Component {
   }
 
   render() {
-    return this.chartTypes.map((chartType) => {
+    return this.chartTypes.map((o) => {
       return <CoronaChart
-               chartType={chartType}
-               allChartData={this.state.allChartData}
+               ref={o.ref}
+               chartType={o.type}
+               allChartData={this.props.allChartData}
              />
     });
   }
