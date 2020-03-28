@@ -24,10 +24,36 @@ code {
   margin-bottom: 5%;
 }
 
+.chart-buttons-section {
+  height: 10%;
+  width: 86%;
+  margin-left: 7%;
+  margin-right: 7%;
+  display: table;
+}
+
 .chart-buttons {
-  text-align: right;
+  display: table-cell;
+  vertical-align: middle;
   margin-right: 5.5vw;
   margin-left: 0.83em;
+}
+
+.chart-buttons-left {
+  float: left;
+  /* display: inline-block; */
+  /* vertical-align: middle;
+  text-align: left; */
+}
+
+.chart-buttons-left > button {
+  padding-top: 0;
+}
+
+.chart-buttons-right {
+  float: right;
+  /* display: inline-block; */
+  /* vertical-align: middle; */
 }
 
 .chart-container {
@@ -35,4 +61,16 @@ code {
     margin: auto;
     height: 80vh;
     width: 88vw;
+}
+
+.copyright-section {
+  text-align: left;
+  margin-left: 7%;
+  margin-bottom: 5%;
+  color: black;
+}
+
+.copyright-section > p {
+  font-size: 11px;
+  vertical-align: middle;
 }

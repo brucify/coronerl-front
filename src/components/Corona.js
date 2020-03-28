@@ -10,13 +10,15 @@ class Corona extends React.Component {
                       , {type: "death_daily", ref: React.createRef()}
                       , {type: "confirmed", ref: React.createRef()}
                       , {type: "confirmed_daily", ref: React.createRef()}
-                      // , {type: "recovered", ref: React.createRef()}
-                      // , {type: "active", ref: React.createRef()}
+                      , {type: "active", ref: React.createRef()}
+                      , {type: "recovered", ref: React.createRef()}
+                      , {type: "recovered_daily", ref: React.createRef()}
+                      , {type: "net_daily", ref: React.createRef()}
                       ];
   }
 
   componentDidMount() {
-    fetch("https://api.coronastats.nu/hello")
+    fetch("http://localhost:8080/hello")
       .then(res => res.json())
       .then(
         (result) => {

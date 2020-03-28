@@ -3,6 +3,7 @@ import {Line} from 'react-chartjs-2';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
+import Button from '@material-ui/core/Button';
 import update from 'immutability-helper';
 
 class CoronaChart extends React.Component {
@@ -11,16 +12,21 @@ class CoronaChart extends React.Component {
     this.state = {
       allChartData: this.props.allChartData
     };
+    this.chartReference = React.createRef();
     this.isDayZero = false;
-    this.chartColors = {
-      red: 'rgb(255, 99, 132)',
-      orange: 'rgb(255, 159, 64)',
-      yellow: 'rgb(255, 205, 86)',
-      green: 'rgb(75, 192, 192)',
-      blue: 'rgb(54, 162, 235)',
-      purple: 'rgb(153, 102, 255)',
-      grey: 'rgb(201, 203, 207)'
-    };
+    this.chartColors =
+      { red: 'rgb(255, 99, 132)'
+      , yellow: 'rgb(255, 205, 86)'
+      , blue: 'rgb(54, 162, 235)'
+      , orange: 'rgb(255, 159, 64)'
+      , green: 'rgb(75, 192, 192)'
+      , purple: 'rgb(153, 102, 255)'
+      // , grey: 'rgb(201, 203, 207)'
+      , pink: 'rgb(255, 192, 203)'
+      , light_sky_blue: 'rgb(135, 206, 250)'
+      , light_green: 'rgb(144, 238, 144)'
+      , light_coral: 'rgb(240, 128, 128)'
+      };
     this.chartOptions = {
       maintainAspectRatio: false,
       legend: {
@@ -29,6 +35,50 @@ class CoronaChart extends React.Component {
          position: "bottom"
        }
     };
+  }
+
+  componentDidUpdate() {
+    this.hideDataset("China");
+  }
+
+  render() {
+    var title = makeTitle(this.props.chartType);
+    var chart = makeChart(this.chartReference,
+                          this.state.allChartData,
+                          this.props.chartType,
+                          this.chartOptions,
+                          this.chartColors);
+    var dayZeroNum = 1;
+    return (
+      <div className="chart-section">
+        <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
+        <div className="chart-buttons-section">
+          <div className="chart-buttons">
+            <div className="chart-buttons-left">
+              <Button color="secondary" onClick={() => this.showOrHide()} >Show / Hide All</Button>
+            </div>
+            <div className="chart-buttons-right">
+              <FormControlLabel
+                control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType, dayZeroNum)} />}
+                label="Day 0"
+              /> since
+              <TextField
+                id="standard-number"
+                size="small"
+                // variant="outlined"
+                defaultValue={dayZeroNum}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
+                style={{width: '35px', marginLeft: '5px'}}
+              /> cases
+            </div>
+          </div>
+        </div>
+        <div className="chart-container">{chart}</div>
+      </div>
+    )
   }
 
   updateData(result) {
@@ -59,19 +109,16 @@ class CoronaChart extends React.Component {
   updateDayZeroView(chartType, numDays) {
     if (this.isDayZero) {
       this.allChartDataDayZero = undefined;
-      console.log("updateDayZeroView" + numDays);
       this.toggleDayZeroView(chartType, numDays);
       this.toggleDayZeroView(chartType, numDays);
     }
   }
 
   dayZeroView(allChartData0, chartType, numDays) {
-    console.log("dayZeroView"+ numDays);
-
     return update(allChartData0, {
       numbers: {
         $set: allChartData0.numbers.map((obj) => {
-          var x = obj[chartType].findIndex((e) => e > numDays);
+          var x = obj[chartType].findIndex((e) => e >= numDays);
           var sliced = obj[chartType].slice(x, obj[chartType].length);
           // obj[chartType] = sliced;
           // return obj;
@@ -86,35 +133,36 @@ class CoronaChart extends React.Component {
     });
   }
 
-  render() {
-    var title = makeTitle(this.props.chartType);
-    var chart = makeChart(this.state.allChartData,
-                          this.props.chartType,
-                          this.chartOptions,
-                          this.chartColors);
-    return (
-      <div className="chart-section">
-        <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
-        <div className="chart-buttons">
-          <FormControlLabel
-            control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType, 100)} />}
-            label="Day 0"
-          /> since
-          <TextField
-            id="standard-number"
-            size="small"
-            // variant="outlined"
-            defaultValue="100"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
-            style={{width: '35px', marginLeft: '5px'}}
-          /> cases
-        </div>
-        <div className="chart-container">{chart}</div>
-      </div>
-    )
+  showOrHide() {
+    var chart = this.chartReference.current.chartInstance;
+    var datasets = chart.data.datasets;
+
+    var allHidden = true;
+    for (var i=0; i<datasets.length; i++) {
+      var meta = chart.getDatasetMeta(i);
+      if (meta.hidden !== true) {
+        meta.hidden = true;
+        allHidden = false;
+      }
+    }
+    if (allHidden) {
+      for (var j=0; j<datasets.length; j++) {
+        meta = chart.getDatasetMeta(j);
+        meta.hidden = null;
+      }
+    }
+    chart.update();
+  }
+
+  hideDataset(countryName) {
+    var chart = this.chartReference.current.chartInstance;
+    var datasets = chart.data.datasets;
+    for (var i=0; i<datasets.length; i++) {
+      if(datasets[i].label === countryName) {
+        chart.getDatasetMeta(i).hidden = true;
+      }
+    }
+    chart.update();
   }
 }
 
@@ -141,6 +189,12 @@ function makeTitle(chartType) {
     case "death_daily":
       title = "COVID-19 new deaths per day";
       break;
+    case "recovered_daily":
+      title = "COVID-19 new recovered per day";
+      break;
+    case "net_daily":
+      title = "COVID-19 net increase per day";
+      break;
     default:
       title = "COVID-19 data";
       break;
@@ -148,13 +202,21 @@ function makeTitle(chartType) {
   return title;
 }
 
-function makeChart(allChartData, chartType, chartOptions, chartColors) {
+function makeChart(chartReference, allChartData, chartType, chartOptions, chartColors) {
   let chart;
   var singleChartData = chartData(allChartData, chartType, chartColors);
   if (chartType === "confirmed_daily") {
-    chart = <Line data={singleChartData} options={chartOptions} redraw/>
+    chart = <Line
+              ref={chartReference}
+              data={singleChartData} options={chartOptions} redraw
+              // getDatasetAtEvent={(dataset) => {datasets.for}}
+            />
   } else {
-    chart = <Line data={singleChartData} options={chartOptions} redraw/>
+    chart = <Line
+              ref={chartReference}
+              data={singleChartData} options={chartOptions} redraw
+              // getDatasetAtEvent={(dataset) => {}}
+            />
   }
   return chart;
 }
@@ -166,22 +228,33 @@ function chartData(allChartData, type, chartColors) {
       var colorNames = Object.keys(chartColors);
       var colorName = colorNames[index % colorNames.length];
       var newColor = chartColors[colorName];
-      switch (type) {
-        case "confirmed":
-          return chartDataSet(x.country, x.confirmed, newColor);
-        case "death":
-          return chartDataSet(x.country, x.death, newColor);
-        case "recovered":
-          return chartDataSet(x.country, x.recovered, newColor);
-        case "active":
-          return chartDataSet(x.country, x.active, newColor);
-        case "confirmed_daily":
-          return chartDataSet(x.country, x.confirmed_daily, newColor);
-        case "death_daily":
-          return chartDataSet(x.country, x.death_daily, newColor);
-        default:
-          return chartDataSet(x.country, x.confirmed, newColor)
-      }
+      // return chartDataSet(x.country, x[type], newColor);
+      switch (x.country) {
+       case "China":
+        return chartDataSet(x.country, x[type], 'rgb(211,211,211)');
+       default:
+        return chartDataSet(x.country, x[type], newColor);
+     }
+      // switch (type) {
+      //   case "confirmed":
+      //     return chartDataSet(x.country, x.confirmed, newColor);
+      //   case "death":
+      //     return chartDataSet(x.country, x.death, newColor);
+      //   case "recovered":
+      //     return chartDataSet(x.country, x.recovered, newColor);
+      //   case "active":
+      //     return chartDataSet(x.country, x.active, newColor);
+      //   case "confirmed_daily":
+      //     return chartDataSet(x.country, x.confirmed_daily, newColor);
+      //   case "death_daily":
+      //     return chartDataSet(x.country, x.death_daily, newColor);
+      //   case "recovered_daily":
+      //     return chartDataSet(x.country, x.recovered_daily, newColor);
+      //   case "net_daily":
+      //     return chartDataSet(x.country, x[type], newColor);
+      //   default:
+      //     return chartDataSet(x.country, x.confirmed, newColor)
+      // }
 
     })
   }
@@ -199,7 +272,7 @@ function chartDataSet(country, data, newColor) {
     borderDash: [],
     borderDashOffset: 0.0,
     borderJoinStyle: 'miter',
-    pointBorderColor: 'rgba(75,192,192,1)',
+    // pointBorderColor: 'rgba(75,192,192,1)',
     pointBackgroundColor: '#fff',
     pointBorderWidth: 1,
     pointHoverRadius: 5,
