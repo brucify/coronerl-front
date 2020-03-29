@@ -13,7 +13,9 @@ class CoronaChart extends React.Component {
       allChartData: this.props.allChartData
     };
     this.chartReference = React.createRef();
-    this.isDayZero = false;
+    this.isDayZeroView = false;
+    this.isPerCapitaView = false;
+    this.dayZaroNum = 1;
     this.chartColors =
       { red: 'rgb(255, 99, 132)'
       , yellow: 'rgb(255, 205, 86)'
@@ -39,6 +41,9 @@ class CoronaChart extends React.Component {
 
   componentDidUpdate() {
     this.hideDataset("China");
+    if (this.allChartDataOriginal === undefined) {
+      this.allChartDataOriginal = this.state.allChartData;
+    }
   }
 
   render() {
@@ -48,7 +53,6 @@ class CoronaChart extends React.Component {
                           this.props.chartType,
                           this.chartOptions,
                           this.chartColors);
-    var dayZeroNum = 1;
     return (
       <div className="chart-section">
         <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
@@ -59,19 +63,23 @@ class CoronaChart extends React.Component {
             </div>
             <div className="chart-buttons-right">
               <FormControlLabel
-                control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType, dayZeroNum)} />}
+                control={<Switch size="small" onChange={() => this.togglePerCapitaView(this.props.chartType)} />}
+                label="Per 1M Capita"
+              />
+              <FormControlLabel
+                control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType, this.dayZaroNum)} />}
                 label="Day 0"
               /> since
               <TextField
                 id="standard-number"
                 size="small"
                 // variant="outlined"
-                defaultValue={dayZeroNum}
+                defaultValue={this.dayZaroNum}
                 InputLabelProps={{
                   shrink: true,
                 }}
                 onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
-                style={{width: '35px', marginLeft: '5px'}}
+                // style={{width: '30px', marginLeft: '5px'}}
               /> cases
             </div>
           </div>
@@ -88,26 +96,54 @@ class CoronaChart extends React.Component {
   }
 
   toggleDayZeroView(chartType, numDays) {
-    if (this.allChartDataOriginal === undefined) {
-      this.allChartDataOriginal = this.state.allChartData;
-    }
+    this.dayZaroNum = numDays;
     if (this.allChartDataDayZero === undefined) {
-      this.allChartDataDayZero = this.dayZeroView(this.allChartDataOriginal, chartType, numDays);
+      this.allChartDataDayZero = this.dayZeroView(this.allChartDataOriginal, chartType, this.dayZaroNum);
     }
 
-    if (!this.isDayZero) {
-      this.setState({ allChartData: this.allChartDataDayZero });
-      this.allChartDataPrevious = this.state.allChartData;
-      this.isDayZero = true;
+    var newData;
+    if (!this.isDayZeroView) {
+      newData = this.allChartDataDayZero;
+      if (this.isPerCapitaView) {
+        newData = this.perCapitaView(this.allChartDataDayZero, chartType);
+      }
+      this.setState({ allChartData: newData });
+      this.isDayZeroView = true;
     } else {
-      this.setState({ allChartData: this.allChartDataOriginal });
-      this.allChartDataPrevious = this.state.allChartData;
-      this.isDayZero = !this.isDayZero;
+      newData = this.allChartDataOriginal;
+      if (this.isPerCapitaView) {
+        newData = this.perCapitaView(this.allChartDataOriginal, chartType);
+      }
+      this.setState({ allChartData: newData });
+      this.isDayZeroView = false;
+    }
+  }
+
+  togglePerCapitaView(chartType) {
+    if (this.allChartDataPerCapita === undefined) {
+      this.allChartDataPerCapita = this.perCapitaView(this.allChartDataOriginal, chartType);
+    }
+
+    var newData;
+    if (!this.isPerCapitaView) {
+      newData = this.allChartDataPerCapita;
+      if (this.isDayZeroView) {
+        newData = this.dayZeroView(this.allChartDataPerCapita, chartType, this.dayZaroNum);
+      }
+      this.setState({ allChartData: newData });
+      this.isPerCapitaView = true;
+    } else {
+      newData = this.allChartDataOriginal;
+      if (this.isDayZeroView) {
+        newData = this.dayZeroView(this.allChartDataOriginal, chartType, this.dayZaroNum);
+      }
+      this.setState({ allChartData: newData });
+      this.isPerCapitaView = false;
     }
   }
 
   updateDayZeroView(chartType, numDays) {
-    if (this.isDayZero) {
+    if (this.isDayZeroView) {
       this.allChartDataDayZero = undefined;
       this.toggleDayZeroView(chartType, numDays);
       this.toggleDayZeroView(chartType, numDays);
@@ -125,9 +161,22 @@ class CoronaChart extends React.Component {
           return update(obj, {[chartType]: {$set: sliced}})
         })
       },
-      months: {
-        $set: Array(allChartData0.months.length).fill().map((x,i)=> {
+      days: {
+        $set: Array(allChartData0.days.length).fill().map((x,i)=> {
             return "Day "+i;
+        })
+      }
+    });
+  }
+
+  perCapitaView(allChartData0, chartType) {
+    return update(allChartData0, {
+      numbers: {
+        $set: allChartData0.numbers.map((obj) => {
+          var perCapitaList = obj[chartType].map((x) => {
+            return x / obj.population * 1000000;
+          });
+          return update(obj, {[chartType]: {$set: perCapitaList}})
         })
       }
     });
@@ -204,38 +253,38 @@ function makeTitle(chartType) {
 
 function makeChart(chartReference, allChartData, chartType, chartOptions, chartColors) {
   let chart;
-  var singleChartData = chartData(allChartData, chartType, chartColors);
+  var chartDataForType = chartData(allChartData, chartType, chartColors);
   if (chartType === "confirmed_daily") {
     chart = <Line
               ref={chartReference}
-              data={singleChartData} options={chartOptions} redraw
+              data={chartDataForType} options={chartOptions} redraw
               // getDatasetAtEvent={(dataset) => {datasets.for}}
             />
   } else {
     chart = <Line
               ref={chartReference}
-              data={singleChartData} options={chartOptions} redraw
+              data={chartDataForType} options={chartOptions} redraw
               // getDatasetAtEvent={(dataset) => {}}
             />
   }
   return chart;
 }
 
-function chartData(allChartData, type, chartColors) {
+function chartData(allChartData, chartType, chartColors) {
   return {
-    labels: allChartData.months,
+    labels: allChartData.days,
     datasets: allChartData.numbers.map((x, index) => {
       var colorNames = Object.keys(chartColors);
       var colorName = colorNames[index % colorNames.length];
       var newColor = chartColors[colorName];
-      // return chartDataSet(x.country, x[type], newColor);
+      // return chartDataSet(x.country, x[chartType], newColor);
       switch (x.country) {
        case "China":
-        return chartDataSet(x.country, x[type], 'rgb(211,211,211)');
+        return chartDataSet(x.country, x[chartType], 'rgb(211,211,211)');
        default:
-        return chartDataSet(x.country, x[type], newColor);
+        return chartDataSet(x.country, x[chartType], newColor);
      }
-      // switch (type) {
+      // switch (chartType) {
       //   case "confirmed":
       //     return chartDataSet(x.country, x.confirmed, newColor);
       //   case "death":
@@ -251,7 +300,7 @@ function chartData(allChartData, type, chartColors) {
       //   case "recovered_daily":
       //     return chartDataSet(x.country, x.recovered_daily, newColor);
       //   case "net_daily":
-      //     return chartDataSet(x.country, x[type], newColor);
+      //     return chartDataSet(x.country, x[chartType], newColor);
       //   default:
       //     return chartDataSet(x.country, x.confirmed, newColor)
       // }

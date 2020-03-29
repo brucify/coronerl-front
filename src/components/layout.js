@@ -31,6 +31,7 @@ export default ({ children }) => {
       <div>{children}</div>
       <div className="copyright-section">
         <p>Data source: <a href="https://github.com/CSSEGISandData/COVID-19">Center for Systems Science and Engineering at Johns Hopkins University</a></p>
+        <p>Population data: <a href="https://www.worldometers.info/world-population/population-by-country/">Worldometers</a></p>
         <p><span role="img" aria-label="virus">🦠</span> © 2020 <a href="https://github.com/brucify">@brucify</a></p>
         <p>Powered by<span> </span>
           <a rel="license" href="https://erlang.org">

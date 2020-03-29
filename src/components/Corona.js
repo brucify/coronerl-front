@@ -18,7 +18,7 @@ class Corona extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:8080/hello")
+    fetch("https://api.coronastats.nu/hello")
       .then(res => res.json())
       .then(
         (result) => {

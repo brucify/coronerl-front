@@ -56,6 +56,15 @@ code {
   /* vertical-align: middle; */
 }
 
+.chart-buttons-right > label.MuiFormControlLabel-root {
+  margin-right: 13px;
+}
+
+#standard-number {
+  width: 30px;
+  margin-left: 5px;
+}
+
 .chart-container {
     position: relative;
     margin: auto;
