@@ -9,7 +9,7 @@ module.exports = {
   siteMetadata: {
     title: "CoronaStats - COVID-19 live stats by country",
     siteUrl: "https://www.coronastats.nu",
-    description: "Coronavirus COVID-19 country curves",
+    description: "Compare each country's COVID-19 curve",
     keyWords: "coronavirus, covid-19 graph, covid-19 stats, covid-19 curves, covid-19 chart, flatten the curve, The Hammer and the Dance, Where is my country on the Coronavirus curve"
   },
   plugins: [`gatsby-plugin-react-helmet`]

@@ -41,6 +41,11 @@ class CoronaChart extends React.Component {
 
   componentDidUpdate() {
     this.hideDataset("China");
+    if (this.hiddenLabels !== undefined) {
+      this.hiddenLabels.forEach((label) => {
+        this.hideDataset(label);
+      });
+    }
     if (this.allChartDataOriginal === undefined) {
       this.allChartDataOriginal = this.state.allChartData;
     }
@@ -67,7 +72,7 @@ class CoronaChart extends React.Component {
                 label="Per 1M Capita"
               />
               <FormControlLabel
-                control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType, this.dayZaroNum)} />}
+                control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType)} />}
                 label="Day 0"
               /> since
               <TextField
@@ -79,7 +84,6 @@ class CoronaChart extends React.Component {
                   shrink: true,
                 }}
                 onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
-                // style={{width: '30px', marginLeft: '5px'}}
               /> cases
             </div>
           </div>
@@ -95,91 +99,73 @@ class CoronaChart extends React.Component {
     });
   }
 
-  toggleDayZeroView(chartType, numDays) {
-    this.dayZaroNum = numDays;
-    if (this.allChartDataDayZero === undefined) {
-      this.allChartDataDayZero = this.dayZeroView(this.allChartDataOriginal, chartType, this.dayZaroNum);
-    }
-
-    var newData;
-    if (!this.isDayZeroView) {
-      newData = this.allChartDataDayZero;
-      if (this.isPerCapitaView) {
-        newData = this.perCapitaView(this.allChartDataDayZero, chartType);
-      }
-      this.setState({ allChartData: newData });
-      this.isDayZeroView = true;
-    } else {
-      newData = this.allChartDataOriginal;
-      if (this.isPerCapitaView) {
-        newData = this.perCapitaView(this.allChartDataOriginal, chartType);
-      }
-      this.setState({ allChartData: newData });
-      this.isDayZeroView = false;
-    }
+  toggleDayZeroView(chartType) {
+    this.isDayZeroView = !this.isDayZeroView;
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    var newData = this.yieldChartData(chartType);
+    this.setState({ allChartData: newData });
   }
 
   togglePerCapitaView(chartType) {
-    if (this.allChartDataPerCapita === undefined) {
-      this.allChartDataPerCapita = this.perCapitaView(this.allChartDataOriginal, chartType);
-    }
+    this.isPerCapitaView = !this.isPerCapitaView;
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    var newData = this.yieldChartData(chartType);
+    this.setState({ allChartData: newData });
+  }
 
-    var newData;
-    if (!this.isPerCapitaView) {
-      newData = this.allChartDataPerCapita;
-      if (this.isDayZeroView) {
-        newData = this.dayZeroView(this.allChartDataPerCapita, chartType, this.dayZaroNum);
-      }
+  updateDayZeroView(chartType, integer) {
+    this.dayZaroNum = integer;
+    if (this.isDayZeroView) {
+      var newData = this.yieldChartData(chartType);
       this.setState({ allChartData: newData });
-      this.isPerCapitaView = true;
-    } else {
-      newData = this.allChartDataOriginal;
-      if (this.isDayZeroView) {
-        newData = this.dayZeroView(this.allChartDataOriginal, chartType, this.dayZaroNum);
-      }
-      this.setState({ allChartData: newData });
-      this.isPerCapitaView = false;
     }
   }
 
-  updateDayZeroView(chartType, numDays) {
-    if (this.isDayZeroView) {
-      this.allChartDataDayZero = undefined;
-      this.toggleDayZeroView(chartType, numDays);
-      this.toggleDayZeroView(chartType, numDays);
-    }
+  yieldChartData(chartType) {
+    var newData;
+    newData = this.dayZeroView(this.allChartDataOriginal, chartType, this.dayZaroNum);
+    newData = this.perCapitaView(newData, chartType);
+    return newData;
   }
 
   dayZeroView(allChartData0, chartType, numDays) {
-    return update(allChartData0, {
-      numbers: {
-        $set: allChartData0.numbers.map((obj) => {
-          var x = obj[chartType].findIndex((e) => e >= numDays);
-          var sliced = obj[chartType].slice(x, obj[chartType].length);
-          // obj[chartType] = sliced;
-          // return obj;
-          return update(obj, {[chartType]: {$set: sliced}})
-        })
-      },
-      days: {
-        $set: Array(allChartData0.days.length).fill().map((x,i)=> {
-            return "Day "+i;
-        })
-      }
-    });
+    if (this.isDayZeroView) {
+      return update(allChartData0, {
+        numbers: {
+          $set: allChartData0.numbers.map((obj) => {
+            var x = obj[chartType].findIndex((e) => e >= numDays);
+            var sliced = obj[chartType].slice(x, obj[chartType].length);
+            // obj[chartType] = sliced;
+            // return obj;
+            return update(obj, {[chartType]: {$set: sliced}})
+          })
+        },
+        days: {
+          $set: Array(allChartData0.days.length).fill().map((x,i)=> {
+              return "Day "+i;
+          })
+        }
+      });
+    } else {
+      return allChartData0;
+    }
   }
 
   perCapitaView(allChartData0, chartType) {
-    return update(allChartData0, {
-      numbers: {
-        $set: allChartData0.numbers.map((obj) => {
-          var perCapitaList = obj[chartType].map((x) => {
-            return x / obj.population * 1000000;
-          });
-          return update(obj, {[chartType]: {$set: perCapitaList}})
-        })
-      }
-    });
+    if (this.isPerCapitaView) {
+      return update(allChartData0, {
+        numbers: {
+          $set: allChartData0.numbers.map((obj) => {
+            var perCapitaList = obj[chartType].map((x) => {
+              return x / obj.population * 1000000;
+            });
+            return update(obj, {[chartType]: {$set: perCapitaList}})
+          })
+        }
+      });
+    } else {
+      return allChartData0;
+    }
   }
 
   showOrHide() {
@@ -201,6 +187,20 @@ class CoronaChart extends React.Component {
       }
     }
     chart.update();
+  }
+
+  getCurrentHiddenLabels() {
+    var chart = this.chartReference.current.chartInstance;
+    var datasets = chart.data.datasets;
+
+    var labelList = [];
+    for (var i=0; i<datasets.length; i++) {
+      var meta = chart.getDatasetMeta(i);
+      if (meta.hidden === true) {
+        labelList.push(datasets[i].label)
+      }
+    }
+    return labelList;
   }
 
   hideDataset(countryName) {
