@@ -18,7 +18,7 @@ class Corona extends React.Component {
   }
 
   componentDidMount() {
-    fetch("https://api.coronastats.nu/hello")
+    fetch(this.apiUrl())
       .then(res => res.json())
       .then(
         (result) => {
@@ -39,6 +39,13 @@ class Corona extends React.Component {
       );
   }
 
+  apiUrl() {
+    if (process.env.NODE_ENV === 'production') {
+      return "https://api.coronastats.nu/hello";
+    } else {
+      return "http://localhost:8080/hello";
+    }
+  }
   render() {
     return this.chartTypes.map((o) => {
       return <CoronaChart
