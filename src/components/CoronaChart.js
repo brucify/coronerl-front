@@ -20,14 +20,26 @@ class CoronaChart extends React.Component {
       { red: 'rgb(255, 99, 132)'
       , yellow: 'rgb(255, 205, 86)'
       , blue: 'rgb(54, 162, 235)'
-      , orange: 'rgb(255, 159, 64)'
+      , salmon: 'rgb(250,128,114)'
+      , pale_golden_rod: 'rgb(238, 232, 170)'
+      , gold: 'rgb(255, 215, 0)'
+      , light_sky_blue: 'rgb(135, 206, 250)'
+      , pink: 'rgb(255, 192, 203)'
+      , light_salmon: 'rgb(255, 160, 122)'
       , green: 'rgb(75, 192, 192)'
       , purple: 'rgb(153, 102, 255)'
       // , grey: 'rgb(201, 203, 207)'
-      , pink: 'rgb(255, 192, 203)'
-      , light_sky_blue: 'rgb(135, 206, 250)'
+      , deep_sky_blue: 'rgb(0, 191, 255)'
+      , yellow_green: 'rgb(154, 205, 50)'
+      , orange: 'rgb(255, 159, 64)'
+      , plum: 'rgb(211, 160, 221)'
+      , green_yellow: 'rgb(173, 255, 47)'
+      , dark_orange: 'rgb(255, 140, 0)'
+      , medium_slate_blue	: 'rgb(123, 104, 238)'
       , light_green: 'rgb(144, 238, 144)'
-      , light_coral: 'rgb(240, 128, 128)'
+      , royal_blue: 'rgb(65, 105, 225)'
+      , dark_turquoise: 'rgb(0, 206, 209)'
+      , orchid: 'rgb(218, 112, 214)'
       };
     this.chartOptions = {
       maintainAspectRatio: false,
@@ -62,35 +74,54 @@ class CoronaChart extends React.Component {
       <div className="chart-section">
         <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
         <div className="chart-buttons-section">
-          <div className="chart-buttons">
-            <div className="chart-buttons-left">
+          <div className="chart-buttons-container">
+            <div className="chart-buttons-container-left">
               <Button color="secondary" onClick={() => this.showOrHide()} >Show / Hide All</Button>
             </div>
-            <div className="chart-buttons-right">
-              <FormControlLabel
-                control={<Switch size="small" onChange={() => this.togglePerCapitaView(this.props.chartType)} />}
-                label="Per 1M Capita"
-              />
-              <FormControlLabel
-                control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType)} />}
-                label="Day 0"
-              /> since
-              <TextField
-                id="standard-number"
-                size="small"
-                // variant="outlined"
-                defaultValue={this.dayZaroNum}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
-              /> cases
+
+            <div className="chart-buttons-container-right">
+              <div className="chart-button-right">
+                <FormControlLabel
+                  control={<Switch size="small" onChange={() => this.togglePerCapitaView(this.props.chartType)} />}
+                  label="Per 1M Capita"
+                />
+              </div>
+              <div className="chart-button-right">
+                <FormControlLabel
+                  control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType)} />}
+                  label="Day 0"
+                /> since
+                <TextField
+                  id="standard-number"
+                  size="small"
+                  // variant="outlined"
+                  defaultValue={this.dayZaroNum}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
+                /> {this.caseWord(this.props.chartType)}
+              </div>
             </div>
           </div>
         </div>
         <div className="chart-container">{chart}</div>
       </div>
     )
+  }
+
+  caseWord(chartType) {
+    switch (chartType) {
+      case "death":           return "deaths";
+      case "death_daily":     return "deaths";
+      case "recovered":       return "recovered";
+      case "recovered_daily": return "recovered";
+      case "confirmed":       return "cases";
+      case "confirmed_daily": return "cases";
+      case "active":          return "cases";
+      case "net_daily":       return "cases";
+      default:                return "cases";
+    }
   }
 
   updateData(result) {

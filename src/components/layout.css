@@ -26,34 +26,39 @@ code {
 
 .chart-buttons-section {
   height: 10%;
-  width: 86%;
-  margin-left: 7%;
-  margin-right: 7%;
-  display: table;
+  width: 88vw;
+  margin: auto;
 }
 
-.chart-buttons {
-  display: table-cell;
+.chart-buttons-container {
   vertical-align: middle;
-  margin-right: 5.5vw;
-  margin-left: 0.83em;
+  margin-left: 8px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.chart-buttons-left {
-  float: left;
-  /* display: inline-block; */
-  /* vertical-align: middle;
-  text-align: left; */
+.chart-buttons-container-left {
+  order: 1;
+  /* background-color: pink; */
 }
 
-.chart-buttons-left > button {
+.chart-buttons-container-left > button {
   padding-top: 0;
 }
 
-.chart-buttons-right {
-  float: right;
-  /* display: inline-block; */
-  /* vertical-align: middle; */
+.chart-buttons-container-middle {
+  order: 2;
+  /* background-color: yellow; */
+}
+
+.chart-buttons-container-right {
+  order: 3;
+  /* background-color: blue; */
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .chart-buttons-right > label.MuiFormControlLabel-root {
@@ -66,10 +71,10 @@ code {
 }
 
 .chart-container {
-    position: relative;
-    margin: auto;
-    height: 80vh;
-    width: 88vw;
+  position: relative;
+  margin: auto;
+  height: 80vh;
+  width: 88vw;
 }
 
 .copyright-section {
