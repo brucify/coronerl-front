@@ -7,10 +7,13 @@
 module.exports = {
   /* Your site config here */
   siteMetadata: {
-    title: "CoronaStats - COVID-19 live stats by country",
-    siteUrl: "https://www.coronastats.nu",
-    description: "Tracking the coronavirus curves by country",
-    keyWords: "coronavirus, covid-19 graph, covid-19 stats, covid-19 curves, covid-19 chart, flatten the curve, The Hammer and the Dance, Where is my country on the Coronavirus curve"
+    title: "CoronaStats",
+    titleTemplate: "%s - COVID-19 live stats by country",
+    description: "Track the coronavirus COVID-19 curves by country",
+    url: "https://www.coronastats.nu",
+    image: "/images/preview-900x471.png", // Path to your image you placed in the 'static' folder
+    twitterUsername: "@brucify",
+    keyWords: "Which countries are flattening the COVID-19 curve, coronavirus, graph, statistics, covid-19 curves, chart, flatten the curve, The Hammer and the Dance, Where is my country on the Coronavirus curve"
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -27,7 +30,7 @@ module.exports = {
         // This config will be shared across all trackingIds
         gtagConfig: {
           optimize_id: "GTM-5QTT4GP",
-          anonymize_ip: false,
+          anonymize_ip: true,
           cookie_expires: 0,
         },
         // This object is used for configuration specific to this plugin

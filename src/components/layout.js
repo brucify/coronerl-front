@@ -1,34 +1,13 @@
 import React from "react"
-import { Helmet } from "react-helmet"
 import { OutboundLink } from "gatsby-plugin-google-gtag"
-import { useStaticQuery, graphql } from "gatsby"
+import SEO from '../components/SEO'
 import "./layout.css"
 
 export default ({ children }) => {
 
-  const data = useStaticQuery(
-      graphql`
-        query {
-          site {
-            siteMetadata {
-              title,
-              siteUrl,
-              description,
-              keyWords
-            }
-          }
-        }
-      `
-  )
   return (
     <div>
-      <Helmet>
-        <meta charSet="utf-8" />
-        <title>{data.site.siteMetadata.title}</title>
-        <link rel="canonical" href={data.site.siteMetadata.siteUrl} />
-        <meta name="description" content={data.site.siteMetadata.description} />
-        <meta name="keywords" content={data.site.siteMetadata.keyWords} />
-      </Helmet>
+      <SEO />
       <div>{children}</div>
       <div className="copyright-section">
         <p>Data source: <OutboundLink href="https://github.com/CSSEGISandData/COVID-19">Center for Systems Science and Engineering at Johns Hopkins University</OutboundLink></p>

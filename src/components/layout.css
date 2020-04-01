@@ -65,9 +65,13 @@ code {
   margin-right: 13px;
 }
 
-#standard-number {
+.since-number {
   width: 30px;
+}
+
+.since-number > div > input {
   margin-left: 5px;
+  padding-left: 3px;
 }
 
 .chart-container {

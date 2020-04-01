@@ -15,6 +15,7 @@ class CoronaChart extends React.Component {
     this.chartReference = React.createRef();
     this.isDayZeroView = false;
     this.isPerCapitaView = false;
+    this.isLogScaleView = false;
     this.dayZaroNum = 1;
     this.chartColors =
       { red: 'rgb(255, 99, 132)'
@@ -61,6 +62,7 @@ class CoronaChart extends React.Component {
     if (this.allChartDataOriginal === undefined) {
       this.allChartDataOriginal = this.state.allChartData;
     }
+    this.logScaleView();
   }
 
   render() {
@@ -78,8 +80,13 @@ class CoronaChart extends React.Component {
             <div className="chart-buttons-container-left">
               <Button color="secondary" onClick={() => this.showOrHide()} >Show / Hide All</Button>
             </div>
-
             <div className="chart-buttons-container-right">
+              <div className="chart-button-right">
+                <FormControlLabel
+                  control={<Switch size="small" onChange={() => this.toggleLogScaleView(this.props.chartType)} />}
+                  label="Log"
+                />
+              </div>
               <div className="chart-button-right">
                 <FormControlLabel
                   control={<Switch size="small" onChange={() => this.togglePerCapitaView(this.props.chartType)} />}
@@ -92,7 +99,7 @@ class CoronaChart extends React.Component {
                   label="Day 0"
                 /> since
                 <TextField
-                  id="standard-number"
+                  className="since-number"
                   size="small"
                   // variant="outlined"
                   defaultValue={this.dayZaroNum}
@@ -100,7 +107,7 @@ class CoronaChart extends React.Component {
                     shrink: true,
                   }}
                   onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
-                /> {this.caseWord(this.props.chartType)}
+                /> {this.sinceWord(this.props.chartType)}
               </div>
             </div>
           </div>
@@ -110,16 +117,16 @@ class CoronaChart extends React.Component {
     )
   }
 
-  caseWord(chartType) {
+  sinceWord(chartType) {
     switch (chartType) {
       case "death":           return "deaths";
-      case "death_daily":     return "deaths";
+      case "death_daily":     return "deaths a day";
       case "recovered":       return "recovered";
-      case "recovered_daily": return "recovered";
+      case "recovered_daily": return "recovered a day";
       case "confirmed":       return "cases";
-      case "confirmed_daily": return "cases";
+      case "confirmed_daily": return "cases a day";
       case "active":          return "cases";
-      case "net_daily":       return "cases";
+      case "net_daily":       return "cases a day";
       default:                return "cases";
     }
   }
@@ -144,8 +151,14 @@ class CoronaChart extends React.Component {
     this.setState({ allChartData: newData });
   }
 
+  toggleLogScaleView(chartType) {
+    this.isLogScaleView = !this.isLogScaleView;
+    this.logScaleView();
+  }
+
   updateDayZeroView(chartType, integer) {
     this.dayZaroNum = integer;
+    this.hiddenLabels = this.getCurrentHiddenLabels();
     if (this.isDayZeroView) {
       var newData = this.yieldChartData(chartType);
       this.setState({ allChartData: newData });
@@ -154,17 +167,17 @@ class CoronaChart extends React.Component {
 
   yieldChartData(chartType) {
     var newData;
-    newData = this.dayZeroView(this.allChartDataOriginal, chartType, this.dayZaroNum);
+    newData = this.dayZeroView(this.allChartDataOriginal, chartType);
     newData = this.perCapitaView(newData, chartType);
     return newData;
   }
 
-  dayZeroView(allChartData0, chartType, numDays) {
+  dayZeroView(allChartData0, chartType) {
     if (this.isDayZeroView) {
       return update(allChartData0, {
         numbers: {
           $set: allChartData0.numbers.map((obj) => {
-            var x = obj[chartType].findIndex((e) => e >= numDays);
+            var x = obj[chartType].findIndex((e) => e >= this.dayZaroNum);
             var sliced = obj[chartType].slice(x, obj[chartType].length);
             // obj[chartType] = sliced;
             // return obj;
@@ -197,6 +210,16 @@ class CoronaChart extends React.Component {
     } else {
       return allChartData0;
     }
+  }
+
+  logScaleView() {
+    var chart = this.chartReference.current.chartInstance;
+    if (this.isLogScaleView) {
+      chart.options.scales.yAxes[0].type = "logarithmic";
+    } else {
+      chart.options.scales.yAxes[0].type = "linear";
+    }
+    chart.update();
   }
 
   showOrHide() {
