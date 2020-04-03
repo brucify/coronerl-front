@@ -21,7 +21,7 @@ class CoronaChart extends React.Component {
     this.toggleLogScaleView = this.toggleLogScaleView.bind(this);
     this.toggleWeekView = this.toggleWeekView.bind(this);
     this.updateDayZeroView = this.updateDayZeroView.bind(this);
-    this.showOrHide = this.toggleWeekView.bind(this);
+    this.showOrHide = this.showOrHide.bind(this);
     this.sinceWord = this.sinceWord.bind(this);
 
     this.chartColors =

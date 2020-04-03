@@ -24,6 +24,18 @@ code {
     monospace;
 }
 
+header.layout-appbar {
+  background-color: #FFB6C1;
+}
+
+h6.layout-appbar-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  font-size: 1.7em;
+  color: black;
+}
+
 .layout-parent {
   max-width: 1200px;
   width: 88vw;
@@ -68,7 +80,7 @@ code {
 }
 
 .chart-button-left > button {
-  padding-top: 0;
+  padding-top: 4px;
   font-size: 0.83em;
 }
 
@@ -112,7 +124,7 @@ code {
 }
 
 .since-number {
-  width: 30px;
+  width: 44px;
 }
 
 .since-number > div > input {
