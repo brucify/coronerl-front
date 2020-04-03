@@ -24,7 +24,25 @@ code {
     monospace;
 }
 
+.layout-parent {
+  max-width: 1200px;
+  width: 88vw;
+  margin: auto;
+}
+
 .all-charts {
+
+}
+
+.copyright-section {
+  text-align: left;
+  margin-bottom: 5%;
+  color: black;
+}
+
+.copyright-section > p {
+  font-size: 11px;
+  vertical-align: middle;
 }
 
 .chart-section {
@@ -33,9 +51,6 @@ code {
 
 .chart-buttons-section {
   height: 10%;
-  width: 88vw;
-  max-width: 1200px;
-  margin: auto;
 }
 
 .chart-buttons-container {
@@ -108,21 +123,6 @@ code {
 
 .chart-container {
   position: relative;
-  margin: auto;
   height: 115vh;
   max-height: 600px;
-  width: 88vw;
-  max-width: 1200px;
-}
-
-.copyright-section {
-  text-align: left;
-  margin-left: 7%;
-  margin-bottom: 5%;
-  color: black;
-}
-
-.copyright-section > p {
-  font-size: 11px;
-  vertical-align: middle;
 }

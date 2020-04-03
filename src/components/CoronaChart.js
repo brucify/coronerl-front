@@ -200,7 +200,7 @@ class CoronaChart extends React.Component {
               if ((i+1) % 7 === 0) {
                 newList.push(old[i]+x); x=0;
               } else if ( i+1 === old.length ) {
-                // newList.push(old[i]+x);
+                // newList.push(old[i]+x); // append incomplete days as last week
                 // ignore rest
               } else {
                 x = x+old[i]
