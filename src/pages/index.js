@@ -2,7 +2,7 @@ import React from "react"
 import Layout from "../components/layout"
 import Corona from '../components/Corona'
 import SEO from '../components/SEO'
-import Footer from '../components/Footer'
+import CoronaFooter from '../components/CoronaFooter'
 
 const IndexPage = () => (
   <Layout>
@@ -11,7 +11,7 @@ const IndexPage = () => (
       <Corona allChartData={chartData} />
     </div>
     <div className="copyright-section">
-      <Footer />
+      <CoronaFooter />
     </div>
   </Layout>
 )

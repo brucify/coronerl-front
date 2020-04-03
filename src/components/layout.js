@@ -1,12 +1,12 @@
 import React from "react"
 // import { useStaticQuery, graphql } from "gatsby"
 import "./layout.css"
-import TopBar from '../components/TopBar'
+import CoronaTopBar from '../components/CoronaTopBar'
 
 export default ({ children }) => {
   return (
     <div>
-      <TopBar />
+      <CoronaTopBar />
       <div className="layout-parent">{children}</div>
     </div>
   )
