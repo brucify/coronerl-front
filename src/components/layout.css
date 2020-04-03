@@ -8,8 +8,15 @@ body {
 }
 
 h2 {
-    margin-inline-start: 0.83em;
-    margin-inline-end: 0.83em;
+    /* margin-inline-start: 0.83em;
+    margin-inline-end: 0.83em; */
+    /* margin-top: auto; */
+    font-size: 1.3em;
+    margin-bottom: 0.5em;
+    width: 88vw;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 code {
@@ -27,6 +34,7 @@ code {
 .chart-buttons-section {
   height: 10%;
   width: 88vw;
+  max-width: 1200px;
   margin: auto;
 }
 
@@ -35,7 +43,7 @@ code {
   margin-left: 8px;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: wrap-reverse;
   justify-content: space-between;
 }
 
@@ -44,8 +52,9 @@ code {
   /* background-color: pink; */
 }
 
-.chart-buttons-container-left > button {
+.chart-button-left > button {
   padding-top: 0;
+  font-size: 0.83em;
 }
 
 .chart-buttons-container-middle {
@@ -55,14 +64,36 @@ code {
 
 .chart-buttons-container-right {
   order: 3;
-  /* background-color: blue; */
+  /* background-color: pink; */
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
 
-.chart-buttons-right > label.MuiFormControlLabel-root {
+.chart-button-left {
+  top: 9px;
+}
+
+.chart-button-right {
+  /* padding-top: 9px; */
+  height: 24px;
+  font-size: 0.95em;
+}
+
+.chart-button-right > label.MuiFormControlLabel-root {
   margin-right: 13px;
+}
+
+.chart-button-right > label.MuiFormControlLabel-root > span {
+  font-size: 0.95em;
+}
+
+.chart-button-right-text {
+  font-size: 0.95em;
+}
+
+.chart-button-right > div > div.MuiInputBase-root {
+  height: 24px;
 }
 
 .since-number {
@@ -70,15 +101,18 @@ code {
 }
 
 .since-number > div > input {
-  margin-left: 5px;
+  font-size: 0.85em;
+  margin-left: 4px;
   padding-left: 3px;
 }
 
 .chart-container {
   position: relative;
   margin: auto;
-  height: 80vh;
+  height: 115vh;
+  max-height: 600px;
   width: 88vw;
+  max-width: 1200px;
 }
 
 .copyright-section {

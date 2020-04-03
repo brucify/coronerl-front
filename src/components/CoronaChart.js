@@ -1,10 +1,7 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import TextField from '@material-ui/core/TextField';
-import Switch from '@material-ui/core/Switch';
-import Button from '@material-ui/core/Button';
 import update from 'immutability-helper';
+import CoronaChartControlBar from '../components/CoronaChartControlBar'
 
 class CoronaChart extends React.Component {
   constructor(props) {
@@ -16,7 +13,17 @@ class CoronaChart extends React.Component {
     this.isDayZeroView = false;
     this.isPerCapitaView = false;
     this.isLogScaleView = false;
+    this.isWeekView = false;
     this.dayZaroNum = 1;
+
+    this.toggleDayZeroView = this.toggleDayZeroView.bind(this);
+    this.togglePerCapitaView = this.togglePerCapitaView.bind(this);
+    this.toggleLogScaleView = this.toggleLogScaleView.bind(this);
+    this.toggleWeekView = this.toggleWeekView.bind(this);
+    this.updateDayZeroView = this.updateDayZeroView.bind(this);
+    this.showOrHide = this.toggleWeekView.bind(this);
+    this.sinceWord = this.sinceWord.bind(this);
+
     this.chartColors =
       { red: 'rgb(255, 99, 132)'
       , yellow: 'rgb(255, 205, 86)'
@@ -72,45 +79,24 @@ class CoronaChart extends React.Component {
                           this.props.chartType,
                           this.chartOptions,
                           this.chartColors);
+
+
     return (
       <div className="chart-section">
         <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
         <div className="chart-buttons-section">
-          <div className="chart-buttons-container">
-            <div className="chart-buttons-container-left">
-              <Button color="secondary" onClick={() => this.showOrHide()} >Show / Hide All</Button>
-            </div>
-            <div className="chart-buttons-container-right">
-              <div className="chart-button-right">
-                <FormControlLabel
-                  control={<Switch size="small" onChange={() => this.toggleLogScaleView(this.props.chartType)} />}
-                  label="Log"
-                />
-              </div>
-              <div className="chart-button-right">
-                <FormControlLabel
-                  control={<Switch size="small" onChange={() => this.togglePerCapitaView(this.props.chartType)} />}
-                  label="Per 1M Capita"
-                />
-              </div>
-              <div className="chart-button-right">
-                <FormControlLabel
-                  control={<Switch size="small" onChange={() => this.toggleDayZeroView(this.props.chartType)} />}
-                  label="Day 0"
-                /> since
-                <TextField
-                  className="since-number"
-                  size="small"
-                  // variant="outlined"
-                  defaultValue={this.dayZaroNum}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  onChange={(e) => this.updateDayZeroView(this.props.chartType, e.target.value)}
-                /> {this.sinceWord(this.props.chartType)}
-              </div>
-            </div>
-          </div>
+          <CoronaChartControlBar
+            chartType={this.props.chartType}
+            isWeekView={this.isWeekView}
+            dayZaroNum={this.dayZaroNum}
+            sinceWord={this.sinceWord}
+            toggleDayZeroView={this.toggleDayZeroView}
+            togglePerCapitaView={this.togglePerCapitaView}
+            toggleLogScaleView={this.toggleLogScaleView}
+            toggleWeekView={this.toggleWeekView}
+            updateDayZeroView={this.updateDayZeroView}
+            showOrHide={this.showOrHide}
+          />
         </div>
         <div className="chart-container">{chart}</div>
       </div>
@@ -144,6 +130,13 @@ class CoronaChart extends React.Component {
     this.setState({ allChartData: newData });
   }
 
+  toggleWeekView(chartType) {
+    this.isWeekView = !this.isWeekView;
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    var newData = this.yieldChartData(chartType);
+    this.setState({ allChartData: newData });
+  }
+
   togglePerCapitaView(chartType) {
     this.isPerCapitaView = !this.isPerCapitaView;
     this.hiddenLabels = this.getCurrentHiddenLabels();
@@ -169,6 +162,7 @@ class CoronaChart extends React.Component {
     var newData;
     newData = this.dayZeroView(this.allChartDataOriginal, chartType);
     newData = this.perCapitaView(newData, chartType);
+    newData = this.weekView(newData, chartType);
     return newData;
   }
 
@@ -187,6 +181,37 @@ class CoronaChart extends React.Component {
         days: {
           $set: Array(allChartData0.days.length).fill().map((x,i)=> {
               return "Day "+i;
+          })
+        }
+      });
+    } else {
+      return allChartData0;
+    }
+  }
+
+  weekView(allChartData0, chartType) {
+    if (this.isWeekView) {
+      return update(allChartData0, {
+        numbers: {
+          $set: allChartData0.numbers.map((obj) => {
+            var old = obj[chartType];
+            var newList = []; var x = 0;
+            for (var i =0; i < old.length; i++) {
+              if ((i+1) % 7 === 0) {
+                newList.push(old[i]+x); x=0;
+              } else if ( i+1 === old.length ) {
+                // newList.push(old[i]+x);
+                // ignore rest
+              } else {
+                x = x+old[i]
+              }
+            }
+            return update(obj, {[chartType]: {$set: newList}})
+          })
+        },
+        days: {
+          $set: Array(Math.round(allChartData0.days.length/7)).fill().map((x,i)=> {
+              return "Week "+(i+1);
           })
         }
       });
