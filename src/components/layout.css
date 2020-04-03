@@ -37,19 +37,26 @@ h6.layout-appbar-text {
 }
 
 .layout-parent {
-  max-width: 1200px;
-  width: 88vw;
-  margin: auto;
+
 }
 
-.all-charts {
+.corona-parent {
 
+}
+
+.all-charts-section {
+    max-width: 1200px;
+    width: 88vw;
+    margin: auto;
 }
 
 .copyright-section {
   text-align: left;
   margin-bottom: 5%;
   color: black;
+  max-width: 1200px;
+  width: 88vw;
+  margin: auto;
 }
 
 .copyright-section > p {

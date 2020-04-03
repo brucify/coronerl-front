@@ -4,15 +4,21 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import CoronaDrawer from '../components/CoronaDrawer'
 
-export default () => {
-  return (
-    <AppBar className="layout-appbar" position="static">
-      <Toolbar variant="dense">
-        <CoronaDrawer />
-        <Typography variant="h6" className="layout-appbar-text">
-          corona_stats
-        </Typography>
-      </Toolbar>
-    </AppBar>
-  )
+class CoronaTopBar extends React.Component {
+  render() {
+    return (
+      <AppBar className="layout-appbar" position="static">
+        <Toolbar variant="dense">
+          <CoronaDrawer
+            fetchAndUpdateType={this.props.fetchAndUpdateType}
+          />
+          <Typography variant="h6" className="layout-appbar-text">
+            corooona_stats
+          </Typography>
+        </Toolbar>
+      </AppBar>
+    )
+  }
 }
+
+export default CoronaTopBar;

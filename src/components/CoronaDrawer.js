@@ -1,7 +1,7 @@
 import React from "react"
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -20,6 +20,7 @@ const useStyles = makeStyles({
 });
 
 export default () => {
+  const clickables = ['Global', 'Sweden', 'USA'];
   const classes = useStyles();
   const [state, setState] = React.useState({
     top: false,
@@ -29,10 +30,14 @@ export default () => {
   });
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
+    if (event !== undefined) {
+      if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+        return;
+      }
+      if (open === false) {
+        console.log(event.target.innerText);
+      }
     }
-
     setState({ ...state, [anchor]: open });
   };
 
@@ -46,7 +51,7 @@ export default () => {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {['Global', 'Sweden', 'USA'].map((text, index) => (
+        {clickables.map((text, index) => (
           <ListItem button key={text}>
             <ListItemIcon><PublicIcon /></ListItemIcon>
             <ListItemText primary={text} />
@@ -62,9 +67,9 @@ export default () => {
       <IconButton edge="start" className="menuButton" color="inherit" aria-label="menu" onClick={toggleDrawer(anchor, true)}>
         <MenuIcon />
       </IconButton>
-      <Drawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}>
+      <SwipeableDrawer anchor={anchor} open={state[anchor]} onClose={toggleDrawer(anchor, false)}>
         {list(anchor)}
-      </Drawer>
+      </SwipeableDrawer>
     </React.Fragment>
   )
 }

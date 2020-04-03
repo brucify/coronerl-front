@@ -7,7 +7,7 @@ import CoronaFooter from '../components/CoronaFooter'
 const IndexPage = () => (
   <Layout>
     <SEO />
-    <div className="all-charts-section">
+    <div className="corona-section">
       <Corona allChartData={chartData} />
     </div>
     <div className="copyright-section">

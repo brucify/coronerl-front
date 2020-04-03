@@ -4,9 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
 
-
 class CoronaChartControlBar extends React.Component {
-
   render() {
     let weekViewSwitch;
     if ([ 'confirmed_daily'
