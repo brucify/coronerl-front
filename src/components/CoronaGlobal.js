@@ -1,8 +1,7 @@
 import React from 'react';
-import CoronaTopBar from '../components/CoronaTopBar'
 import CoronaChart from '../components/CoronaChart'
 
-class Corona extends React.Component {
+class CoronaGlobal extends React.Component {
   constructor(props) {
     super(props);
     this.allChartDataPrevious = undefined;
@@ -16,12 +15,11 @@ class Corona extends React.Component {
                       , {type: "recovered_daily", ref: React.createRef()}
                       , {type: "net_daily",       ref: React.createRef()}
                       ];
-    this.drawerItems = ['Global', 'Sweden', 'USA'];
-    this.fetchAndUpdateType = this.fetchAndUpdateType.bind(this);
+
   }
 
   componentDidMount() {
-    this.fetchAndUpdateType();
+    this.fetchFromUrl(apiUrl(this.props.drawerItem));
   }
 
   render() {
@@ -34,11 +32,7 @@ class Corona extends React.Component {
     });
 
     return (
-      <div className="corona-parent">
-        <CoronaTopBar
-          drawerItems={this.drawerItems}
-          fetchAndUpdateType={this.fetchAndUpdateType}
-        />
+      <div className="corona-global-parent">
         <div className="all-charts-section">
           {charts}
         </div>
@@ -46,15 +40,27 @@ class Corona extends React.Component {
     )
   }
 
-  fetchAndUpdateType() {
-    fetch(apiUrl())
+  fetchFromUrl(url) {
+    fetch(url)
       .then(res => res.json())
       .then(
         (result) => {
-          this.chartTypes.map((o) => {
-            o.ref.current.updateData(result);
-            return o;
+
+          var fetchedTypes = Object.keys(result.numbers[0]);
+          console.log("fetchedTypes:");
+          console.log(fetchedTypes);
+          this.chartTypes.forEach((o, i) => {
+
+              console.log("o.type");
+              console.log(o.type);
+            if (fetchedTypes.includes(o.type)) {
+              o.ref.current.updateData(result);
+            }
           });
+          // this.chartTypes.map((o) => {
+          //   o.ref.current.updateData(result);
+          //   return o;
+          // });
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -69,12 +75,26 @@ class Corona extends React.Component {
   }
 }
 
-export default Corona;
+export default CoronaGlobal;
 
-function apiUrl() {
+function apiUrl(drawerItem) {
     if (process.env.NODE_ENV === 'production') {
-      return "https://api.coronastats.nu/hello";
+      switch (drawerItem) {
+        case "Global":
+          return "https://api.coronastats.nu/global";
+        case "Sweden":
+          return "https://api.coronastats.nu/sweden";
+        default:
+          return "https://api.coronastats.nu/global";
+      }
     } else {
-      return "http://localhost:8080/hello";
+      switch (drawerItem) {
+        case "Global":
+          return "http://localhost:8080/global";
+        case "Sweden":
+          return "http://localhost:8080/sweden";
+        default:
+          return "http://localhost:8080/global";
+      }
     }
   }

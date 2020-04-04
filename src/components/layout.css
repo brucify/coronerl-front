@@ -36,11 +36,16 @@ h6.layout-appbar-text {
   color: black;
 }
 
+.drawer-items {
+  color: inherit;
+  text-decoration: none;
+}
+
 .layout-parent {
 
 }
 
-.corona-parent {
+.corona-global-parent {
 
 }
 

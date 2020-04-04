@@ -118,6 +118,8 @@ class CoronaChart extends React.Component {
   }
 
   updateData(result) {
+    this.allChartDataOriginal = result;
+
     this.setState({
       allChartData: result
     });
@@ -356,32 +358,32 @@ function chartData(allChartData, chartType, chartColors) {
       var colorNames = Object.keys(chartColors);
       var colorName = colorNames[index % colorNames.length];
       var newColor = chartColors[colorName];
-      // return chartDataSet(x.country, x[chartType], newColor);
-      switch (x.country) {
+      // return chartDataSet(x.name, x[chartType], newColor);
+      switch (x.name) {
        case "China":
-        return chartDataSet(x.country, x[chartType], 'rgb(211,211,211)');
+        return chartDataSet(x.name, x[chartType], 'rgb(211,211,211)');
        default:
-        return chartDataSet(x.country, x[chartType], newColor);
+        return chartDataSet(x.name, x[chartType], newColor);
      }
       // switch (chartType) {
       //   case "confirmed":
-      //     return chartDataSet(x.country, x.confirmed, newColor);
+      //     return chartDataSet(x.name, x.confirmed, newColor);
       //   case "death":
-      //     return chartDataSet(x.country, x.death, newColor);
+      //     return chartDataSet(x.name, x.death, newColor);
       //   case "recovered":
-      //     return chartDataSet(x.country, x.recovered, newColor);
+      //     return chartDataSet(x.name, x.recovered, newColor);
       //   case "active":
-      //     return chartDataSet(x.country, x.active, newColor);
+      //     return chartDataSet(x.name, x.active, newColor);
       //   case "confirmed_daily":
-      //     return chartDataSet(x.country, x.confirmed_daily, newColor);
+      //     return chartDataSet(x.name, x.confirmed_daily, newColor);
       //   case "death_daily":
-      //     return chartDataSet(x.country, x.death_daily, newColor);
+      //     return chartDataSet(x.name, x.death_daily, newColor);
       //   case "recovered_daily":
-      //     return chartDataSet(x.country, x.recovered_daily, newColor);
+      //     return chartDataSet(x.name, x.recovered_daily, newColor);
       //   case "net_daily":
-      //     return chartDataSet(x.country, x[chartType], newColor);
+      //     return chartDataSet(x.name, x[chartType], newColor);
       //   default:
-      //     return chartDataSet(x.country, x.confirmed, newColor)
+      //     return chartDataSet(x.name, x.confirmed, newColor)
       // }
 
     })

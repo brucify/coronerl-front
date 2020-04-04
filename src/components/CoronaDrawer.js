@@ -9,6 +9,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PublicIcon from '@material-ui/icons/Public';
+import { OutboundLink } from "gatsby-plugin-google-gtag"
 
 const useStyles = makeStyles({
   list: {
@@ -36,7 +37,6 @@ export default (props) => {
       }
       if (open === false) {
         console.log(event.target.innerText);
-        props.fetchAndUpdateType(event.target.innerText);
       }
     }
     setState({ ...state, [anchor]: open });
@@ -52,12 +52,17 @@ export default (props) => {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {props.drawerItems.map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon><PublicIcon /></ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
+        {props.drawerItems.map((text, index) => {
+          var href = props.drawerHref(text);
+          return (
+            <OutboundLink className="drawer-items" href={href}>
+              <ListItem button key={text}>
+                  <ListItemIcon><PublicIcon /></ListItemIcon>
+                  <ListItemText primary={text} />
+              </ListItem>
+            </OutboundLink>
+          )
+        })}
       </List>
     </div>
   );
