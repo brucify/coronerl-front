@@ -19,8 +19,8 @@ const useStyles = makeStyles({
   },
 });
 
-export default () => {
-  const clickables = ['Global', 'Sweden', 'USA'];
+export default (props) => {
+  // const clickables = ['Global', 'Sweden', 'USA'];
   const classes = useStyles();
   const [state, setState] = React.useState({
     top: false,
@@ -36,6 +36,7 @@ export default () => {
       }
       if (open === false) {
         console.log(event.target.innerText);
+        props.fetchAndUpdateType(event.target.innerText);
       }
     }
     setState({ ...state, [anchor]: open });
@@ -51,7 +52,7 @@ export default () => {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {clickables.map((text, index) => (
+        {props.drawerItems.map((text, index) => (
           <ListItem button key={text}>
             <ListItemIcon><PublicIcon /></ListItemIcon>
             <ListItemText primary={text} />

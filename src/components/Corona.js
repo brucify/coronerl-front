@@ -7,15 +7,16 @@ class Corona extends React.Component {
     super(props);
     this.allChartDataPrevious = undefined;
     this.chartReference = React.createRef();
-    this.chartTypes = [ {type: "death", ref: React.createRef()}
-                      , {type: "death_daily", ref: React.createRef()}
-                      , {type: "confirmed", ref: React.createRef()}
+    this.chartTypes = [ {type: "death",           ref: React.createRef()}
+                      , {type: "death_daily",     ref: React.createRef()}
+                      , {type: "confirmed",       ref: React.createRef()}
                       , {type: "confirmed_daily", ref: React.createRef()}
-                      , {type: "active", ref: React.createRef()}
-                      , {type: "recovered", ref: React.createRef()}
+                      , {type: "active",          ref: React.createRef()}
+                      , {type: "recovered",       ref: React.createRef()}
                       , {type: "recovered_daily", ref: React.createRef()}
-                      , {type: "net_daily", ref: React.createRef()}
+                      , {type: "net_daily",       ref: React.createRef()}
                       ];
+    this.drawerItems = ['Global', 'Sweden', 'USA'];
     this.fetchAndUpdateType = this.fetchAndUpdateType.bind(this);
   }
 
@@ -35,6 +36,7 @@ class Corona extends React.Component {
     return (
       <div className="corona-parent">
         <CoronaTopBar
+          drawerItems={this.drawerItems}
           fetchAndUpdateType={this.fetchAndUpdateType}
         />
         <div className="all-charts-section">
