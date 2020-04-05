@@ -25,8 +25,8 @@ class CoronaChartControlBar extends React.Component {
     return (
       <div className="chart-buttons-container">
         <div className="chart-buttons-container-left">
-          <div className="chart-button-left">
-            <Button color="secondary" onClick={() => this.props.showOrHide()} >Show / Hide All</Button>
+          <div className="chart-button-right">
+            <Button color="secondary" onClick={() => this.showOrHide()} >Show / Hide All</Button>
           </div>
         </div>
         <div className="chart-buttons-container-right">

@@ -55,7 +55,7 @@ h6.layout-appbar-text {
     margin: auto;
 }
 
-.copyright-section {
+.copyright-section, .about-section {
   text-align: left;
   margin-bottom: 5%;
   color: black;
@@ -64,9 +64,13 @@ h6.layout-appbar-text {
   margin: auto;
 }
 
-.copyright-section > p {
+.copyright-section > p, .about-section > p {
   font-size: 11px;
   vertical-align: middle;
+}
+
+.about-section {
+  margin-top: 3vh;
 }
 
 .chart-section {
@@ -91,8 +95,8 @@ h6.layout-appbar-text {
   /* background-color: pink; */
 }
 
-.chart-button-left > button {
-  padding-top: 4px;
+.chart-button-right > button {
+  padding-top: 2px;
   font-size: 0.83em;
 }
 

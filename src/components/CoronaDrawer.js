@@ -8,7 +8,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import PublicIcon from '@material-ui/icons/Public';
 import { OutboundLink } from "gatsby-plugin-google-gtag"
 
 const useStyles = makeStyles({
@@ -57,7 +56,7 @@ export default (props) => {
           return (
             <OutboundLink className="drawer-items" href={href}>
               <ListItem button key={text}>
-                  <ListItemIcon><PublicIcon /></ListItemIcon>
+                  <ListItemIcon>{props.drawerIcons(text)}</ListItemIcon>
                   <ListItemText primary={text} />
               </ListItem>
             </OutboundLink>
