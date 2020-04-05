@@ -1,32 +1,38 @@
 import React from "react"
+import { OutboundLink } from "gatsby-plugin-google-gtag"
 import Layout from "../components/layout"
 import SEO from '../components/SEO'
 import CoronaTopBar from '../components/CoronaTopBar'
 import CoronaGlobal from '../components/CoronaGlobal'
 import CoronaFooter from '../components/CoronaFooter'
 
+const chartTypes = [ {type: "death",           ref: React.createRef()}
+                   , {type: "death_daily",     ref: React.createRef()}
+                   , {type: "confirmed",       ref: React.createRef()}
+                   , {type: "confirmed_daily", ref: React.createRef()}
+                   , {type: "active",          ref: React.createRef()}
+                   , {type: "recovered",       ref: React.createRef()}
+                   , {type: "recovered_daily", ref: React.createRef()}
+                   , {type: "net_daily",       ref: React.createRef()}
+                   ];
 
 const IndexPage = () => (
   <Layout>
     <SEO />
-    <CoronaTopBar drawerItem="Global" />
+    <CoronaTopBar />
     <div className="corona-section">
-      <CoronaGlobal allChartData={chartData} />
+      <CoronaGlobal
+        drawerItem="Global"
+        chartTypes={chartTypes}
+      />
     </div>
     <div className="copyright-section">
+      <p>Data source: <OutboundLink href="https://github.com/CSSEGISandData/COVID-19">Center for Systems Science and Engineering at Johns Hopkins University</OutboundLink></p>
+      <p>Population data: <OutboundLink href="https://www.worldometers.info/world-population/population-by-country/">Worldometers</OutboundLink></p>
       <CoronaFooter />
     </div>
   </Layout>
 )
-
-const chartData = {
-  days: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-  numbers:
-    [{country: "XXXX",
-      confirmed: [65, 59, 80, 81, 56, 55, 40]},
-     {country: "XXXX",
-      confirmed: [50, 32, 44, 51, 66, 75, 80]}]
-};
 
 // this.drawerItems = ['Global'];
 // const currentDrawerItem = undefined;

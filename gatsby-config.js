@@ -7,10 +7,10 @@
 module.exports = {
   /* Your site config here */
   siteMetadata: {
-    title: "CoronaStats",
-    titleTemplate: "%s - COVID-19 live stats by country",
-    description: "Track the coronavirus COVID-19 curves by country",
-    url: "https://www.coronastats.nu",
+    title: "COVID19curves",
+    titleTemplate: "%s - Compare the coronavirus curves by country",
+    description: "Compare the coronavirus COVID-19 curves by country",
+    url: "https://www.covid19curves.se",
     image: "/images/preview-900x471.png", // Path to your image you placed in the 'static' folder
     twitterUsername: "@brucify",
     keyWords: "Which countries are flattening the COVID-19 curve, coronavirus, graph, statistics, covid-19 curves, chart, flatten the curve, The Hammer and the Dance, Where is my country on the Coronavirus curve"

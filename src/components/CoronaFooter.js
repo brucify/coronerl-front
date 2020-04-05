@@ -3,9 +3,7 @@ import { OutboundLink } from "gatsby-plugin-google-gtag"
 
 export default () => {
   return (
-    <div>
-      <p>Data source: <OutboundLink href="https://github.com/CSSEGISandData/COVID-19">Center for Systems Science and Engineering at Johns Hopkins University</OutboundLink></p>
-      <p>Population data: <OutboundLink href="https://www.worldometers.info/world-population/population-by-country/">Worldometers</OutboundLink></p>
+    <div className="copyright-section">
       <p><span role="img" aria-label="virus">🦠</span> © 2020 <OutboundLink href="https://github.com/brucify">@brucify</OutboundLink></p>
       <p>Powered by<span> </span>
         <OutboundLink rel="license" href="https://erlang.org">

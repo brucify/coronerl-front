@@ -1,20 +1,20 @@
 import React from 'react';
 import CoronaChart from '../components/CoronaChart'
 
+const initialChartData = {
+  days: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  numbers:
+    [{name: "XXXX",
+      confirmed: [65, 59, 80, 81, 56, 55, 40]},
+     {name: "XXXX",
+      confirmed: [50, 32, 44, 51, 66, 75, 80]}]
+};
+
 class CoronaGlobal extends React.Component {
   constructor(props) {
     super(props);
     this.allChartDataPrevious = undefined;
     this.chartReference = React.createRef();
-    this.chartTypes = [ {type: "death",           ref: React.createRef()}
-                      , {type: "death_daily",     ref: React.createRef()}
-                      , {type: "confirmed",       ref: React.createRef()}
-                      , {type: "confirmed_daily", ref: React.createRef()}
-                      , {type: "active",          ref: React.createRef()}
-                      , {type: "recovered",       ref: React.createRef()}
-                      , {type: "recovered_daily", ref: React.createRef()}
-                      , {type: "net_daily",       ref: React.createRef()}
-                      ];
 
   }
 
@@ -23,11 +23,11 @@ class CoronaGlobal extends React.Component {
   }
 
   render() {
-    const charts = this.chartTypes.map((o) => {
+    const charts = this.props.chartTypes.map((o) => {
       return <CoronaChart
                ref={o.ref}
                chartType={o.type}
-               allChartData={this.props.allChartData}
+               allChartData={initialChartData}
              />
     });
 
@@ -45,22 +45,16 @@ class CoronaGlobal extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
-
-          var fetchedTypes = Object.keys(result.numbers[0]);
-          console.log("fetchedTypes:");
-          console.log(fetchedTypes);
-          this.chartTypes.forEach((o, i) => {
-
-              console.log("o.type");
-              console.log(o.type);
-            if (fetchedTypes.includes(o.type)) {
-              o.ref.current.updateData(result);
-            }
-          });
-          // this.chartTypes.map((o) => {
-          //   o.ref.current.updateData(result);
-          //   return o;
+          // var fetchedTypes = Object.keys(result.numbers[0]);
+          // this.props.chartTypes.forEach((o, i) => {
+          //   if (fetchedTypes.includes(o.type)) {
+          //     o.ref.current.updateData(result);
+          //   }
           // });
+          this.props.chartTypes.map((o) => {
+            o.ref.current.updateData(result);
+            return o;
+          });
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow

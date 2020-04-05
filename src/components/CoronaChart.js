@@ -172,13 +172,15 @@ class CoronaChart extends React.Component {
     if (this.isDayZeroView) {
       return update(allChartData0, {
         numbers: {
-          $set: allChartData0.numbers.map((obj) => {
-            var x = obj[chartType].findIndex((e) => e >= this.dayZaroNum);
-            var sliced = obj[chartType].slice(x, obj[chartType].length);
-            // obj[chartType] = sliced;
-            // return obj;
-            return update(obj, {[chartType]: {$set: sliced}})
-          })
+          $set: allChartData0.numbers
+            .filter(x => x[chartType] !== undefined)
+            .map((obj) => {
+              var x = obj[chartType].findIndex((e) => e >= this.dayZaroNum);
+              var sliced = obj[chartType].slice(x, obj[chartType].length);
+              // obj[chartType] = sliced;
+              // return obj;
+              return update(obj, {[chartType]: {$set: sliced}})
+            })
         },
         days: {
           $set: Array(allChartData0.days.length).fill().map((x,i)=> {
@@ -195,21 +197,23 @@ class CoronaChart extends React.Component {
     if (this.isWeekView) {
       return update(allChartData0, {
         numbers: {
-          $set: allChartData0.numbers.map((obj) => {
-            var old = obj[chartType];
-            var newList = []; var x = 0;
-            for (var i =0; i < old.length; i++) {
-              if ((i+1) % 7 === 0) {
-                newList.push(old[i]+x); x=0;
-              } else if ( i+1 === old.length ) {
-                // newList.push(old[i]+x); // append incomplete days as last week
-                // ignore rest
-              } else {
-                x = x+old[i]
+          $set: allChartData0.numbers
+            .filter(x => x[chartType] !== undefined)
+            .map((obj) => {
+              var old = obj[chartType];
+              var newList = []; var x = 0;
+              for (var i =0; i < old.length; i++) {
+                if ((i+1) % 7 === 0) {
+                  newList.push(old[i]+x); x=0;
+                } else if ( i+1 === old.length ) {
+                  // newList.push(old[i]+x); // append incomplete days as last week
+                  // ignore rest
+                } else {
+                  x = x+old[i]
+                }
               }
-            }
-            return update(obj, {[chartType]: {$set: newList}})
-          })
+              return update(obj, {[chartType]: {$set: newList}})
+            })
         },
         days: {
           $set: Array(Math.round(allChartData0.days.length/7)).fill().map((x,i)=> {
@@ -226,12 +230,14 @@ class CoronaChart extends React.Component {
     if (this.isPerCapitaView) {
       return update(allChartData0, {
         numbers: {
-          $set: allChartData0.numbers.map((obj) => {
-            var perCapitaList = obj[chartType].map((x) => {
-              return x / obj.population * 1000000;
-            });
-            return update(obj, {[chartType]: {$set: perCapitaList}})
-          })
+          $set: allChartData0.numbers
+            .filter(x => x[chartType] !== undefined)
+            .map((obj) => {
+              var perCapitaList = obj[chartType].map((x) => {
+                return x / obj.population * 1000000;
+              });
+              return update(obj, {[chartType]: {$set: perCapitaList}})
+            })
         }
       });
     } else {
@@ -325,6 +331,9 @@ function makeTitle(chartType) {
     case "net_daily":
       title = "COVID-19 net increase per day";
       break;
+    case "death_vs_icu":
+      title = "COVID-19 reported vs deaths vs in ICU";
+      break;
     default:
       title = "COVID-19 data";
       break;
@@ -354,39 +363,41 @@ function makeChart(chartReference, allChartData, chartType, chartOptions, chartC
 function chartData(allChartData, chartType, chartColors) {
   return {
     labels: allChartData.days,
-    datasets: allChartData.numbers.map((x, index) => {
-      var colorNames = Object.keys(chartColors);
-      var colorName = colorNames[index % colorNames.length];
-      var newColor = chartColors[colorName];
-      // return chartDataSet(x.name, x[chartType], newColor);
-      switch (x.name) {
-       case "China":
-        return chartDataSet(x.name, x[chartType], 'rgb(211,211,211)');
-       default:
-        return chartDataSet(x.name, x[chartType], newColor);
-     }
-      // switch (chartType) {
-      //   case "confirmed":
-      //     return chartDataSet(x.name, x.confirmed, newColor);
-      //   case "death":
-      //     return chartDataSet(x.name, x.death, newColor);
-      //   case "recovered":
-      //     return chartDataSet(x.name, x.recovered, newColor);
-      //   case "active":
-      //     return chartDataSet(x.name, x.active, newColor);
-      //   case "confirmed_daily":
-      //     return chartDataSet(x.name, x.confirmed_daily, newColor);
-      //   case "death_daily":
-      //     return chartDataSet(x.name, x.death_daily, newColor);
-      //   case "recovered_daily":
-      //     return chartDataSet(x.name, x.recovered_daily, newColor);
-      //   case "net_daily":
-      //     return chartDataSet(x.name, x[chartType], newColor);
-      //   default:
-      //     return chartDataSet(x.name, x.confirmed, newColor)
-      // }
+    datasets: allChartData.numbers
+      .filter(x => x[chartType] !== undefined)
+      .map((x, index) => {
+        var colorNames = Object.keys(chartColors);
+        var colorName = colorNames[index % colorNames.length];
+        var newColor = chartColors[colorName];
+        // return chartDataSet(x.name, x[chartType], newColor);
+        switch (x.name) {
+         case "China":
+          return chartDataSet(x.name, x[chartType], 'rgb(211,211,211)');
+         default:
+          return chartDataSet(x.name, x[chartType], newColor);
+       }
+        // switch (chartType) {
+        //   case "confirmed":
+        //     return chartDataSet(x.name, x.confirmed, newColor);
+        //   case "death":
+        //     return chartDataSet(x.name, x.death, newColor);
+        //   case "recovered":
+        //     return chartDataSet(x.name, x.recovered, newColor);
+        //   case "active":
+        //     return chartDataSet(x.name, x.active, newColor);
+        //   case "confirmed_daily":
+        //     return chartDataSet(x.name, x.confirmed_daily, newColor);
+        //   case "death_daily":
+        //     return chartDataSet(x.name, x.death_daily, newColor);
+        //   case "recovered_daily":
+        //     return chartDataSet(x.name, x.recovered_daily, newColor);
+        //   case "net_daily":
+        //     return chartDataSet(x.name, x[chartType], newColor);
+        //   default:
+        //     return chartDataSet(x.name, x.confirmed, newColor)
+        // }
 
-    })
+      })
   }
 }
 
