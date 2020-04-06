@@ -51,6 +51,7 @@ class CoronaGlobal extends React.Component {
           //     o.ref.current.updateData(result);
           //   }
           // });
+          mendData(result);
           this.props.chartTypes.map((o) => {
             o.ref.current.updateData(result);
             return o;
@@ -92,3 +93,15 @@ function apiUrl(drawerItem) {
       }
     }
   }
+
+function mendData(result) {
+  var userLang = navigator.language || navigator.userLanguage;
+  var list = ["zh","zh-cn","zh-hans"];
+  var cond1 = (navigator.languages !== undefined &&
+    navigator.languages.some((x)=>list.includes(x.toLowerCase())));
+  var cond2 = (list).includes(userLang.toLowerCase());
+  if(cond1 || cond2) {
+    result.numbers = result.numbers.filter((x) => !["Taiwan*"].includes(x.name));
+  }
+  return result;
+}

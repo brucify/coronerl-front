@@ -247,10 +247,31 @@ class CoronaChart extends React.Component {
 
   logScaleView() {
     var chart = this.chartReference.current.chartInstance;
+    if (this.linearCallbackOriginal === undefined) {
+      this.linearCallbackOriginal = chart.options.scales.yAxes[0].ticks.callback
+    }
+
     if (this.isLogScaleView) {
       chart.options.scales.yAxes[0].type = "logarithmic";
+      chart.options.scales.yAxes[0].ticks.callback = (value, i, values) => {
+        // if (value === 5000000) return "5000000";
+        if (value === 1000000) return "1000000";
+        // if (value === 500000) return "500000";
+        if (value === 100000) return "100000";
+        // if (value === 50000) return "50000";
+        if (value === 10000) return "10000";
+        // if (value === 5000) return "5000";
+        if (value === 1000) return "1000";
+        // if (value === 500) return "500";
+        if (value === 100) return "100";
+        if (value === 10) return "10";
+        // if (value === 5) return "5";
+        if (value === 0) return "0";
+        return null;
+      };
     } else {
       chart.options.scales.yAxes[0].type = "linear";
+      chart.options.scales.yAxes[0].ticks.callback = this.linearCallbackOriginal;
     }
     chart.update();
   }

@@ -19,6 +19,9 @@ const IndexPage = () => (
       <p>Population data:</p>
       <p><OutboundLink href="https://www.worldometers.info/world-population/population-by-country/">Worldometers</OutboundLink> (Global)</p>
       <p><OutboundLink href="https://www.scb.se/hitta-statistik/statistik-efter-amne/befolkning/befolkningens-sammansattning/befolkningsstatistik/pong/tabell-och-diagram/kvartals--och-halvarsstatistik--kommun-lan-och-riket/kvartal-1-2019/">Statistikmyndigheten SCB</OutboundLink> (Sweden)</p>
+      <p><OutboundLink href="https://support.google.com/analytics/answer/6004245">Privacy notice</OutboundLink></p>
+      <img alt="Hack the crisis" style={{borderWidth:0, height:100, width:100}} src="/images/Hack the crisis - black transp.png" />
+      <p>A submission to <OutboundLink href="https://www.hackthecrisis.se/">Hack the Crisis hackathon 2020</OutboundLink> in Sweden</p>
       <CoronaFooter />
     </div>
   </Layout>
