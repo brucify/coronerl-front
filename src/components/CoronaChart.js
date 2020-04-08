@@ -60,7 +60,6 @@ class CoronaChart extends React.Component {
   }
 
   componentDidUpdate() {
-    this.hideDataset("China");
     if (this.hiddenLabels !== undefined) {
       this.hiddenLabels.forEach((label) => {
         this.hideDataset(label);
@@ -119,31 +118,11 @@ class CoronaChart extends React.Component {
 
   updateData(result) {
     this.allChartDataOriginal = result;
-
     this.setState({
       allChartData: result
     });
-  }
-
-  toggleDayZeroView(chartType) {
-    this.isDayZeroView = !this.isDayZeroView;
-    this.hiddenLabels = this.getCurrentHiddenLabels();
-    var newData = this.yieldChartData(chartType);
-    this.setState({ allChartData: newData });
-  }
-
-  toggleWeekView(chartType) {
-    this.isWeekView = !this.isWeekView;
-    this.hiddenLabels = this.getCurrentHiddenLabels();
-    var newData = this.yieldChartData(chartType);
-    this.setState({ allChartData: newData });
-  }
-
-  togglePerCapitaView(chartType) {
-    this.isPerCapitaView = !this.isPerCapitaView;
-    this.hiddenLabels = this.getCurrentHiddenLabels();
-    var newData = this.yieldChartData(chartType);
-    this.setState({ allChartData: newData });
+    this.hideDataset("China");
+    // this.hideRandomDataset();
   }
 
   toggleLogScaleView(chartType) {
@@ -151,13 +130,32 @@ class CoronaChart extends React.Component {
     this.logScaleView();
   }
 
+  toggleDayZeroView(chartType) {
+    this.isDayZeroView = !this.isDayZeroView;
+    this.redrawChart(chartType);
+  }
+
+  toggleWeekView(chartType) {
+    this.isWeekView = !this.isWeekView;
+    this.redrawChart(chartType);
+  }
+
+  togglePerCapitaView(chartType) {
+    this.isPerCapitaView = !this.isPerCapitaView;
+    this.redrawChart(chartType);
+  }
+
   updateDayZeroView(chartType, integer) {
     this.dayZaroNum = integer;
-    this.hiddenLabels = this.getCurrentHiddenLabels();
     if (this.isDayZeroView) {
-      var newData = this.yieldChartData(chartType);
-      this.setState({ allChartData: newData });
+      this.redrawChart(chartType);
     }
+  }
+
+  redrawChart(chartType) {
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    var newData = this.yieldChartData(chartType);
+    this.setState({ allChartData: newData });
   }
 
   yieldChartData(chartType) {
@@ -281,18 +279,17 @@ class CoronaChart extends React.Component {
     var datasets = chart.data.datasets;
 
     var allHidden = true;
-    for (var i=0; i<datasets.length; i++) {
+    datasets.forEach((d, i) => {
       var meta = chart.getDatasetMeta(i);
       if (meta.hidden !== true) {
         meta.hidden = true;
         allHidden = false;
       }
-    }
+    });
     if (allHidden) {
-      for (var j=0; j<datasets.length; j++) {
-        meta = chart.getDatasetMeta(j);
-        meta.hidden = null;
-      }
+      datasets.forEach((d, i) => {
+        chart.getDatasetMeta(i).hidden = null;
+      });
     }
     chart.update();
   }
@@ -319,6 +316,17 @@ class CoronaChart extends React.Component {
         chart.getDatasetMeta(i).hidden = true;
       }
     }
+    chart.update();
+  }
+
+  hideRandomDataset() {
+    var chart = this.chartReference.current.chartInstance;
+    var datasets = chart.data.datasets;
+    datasets.forEach((d, i) => {
+      if (Math.random() < 0.5) {
+        chart.getDatasetMeta(i).hidden = true;
+      }
+    });
     chart.update();
   }
 }
@@ -390,34 +398,12 @@ function chartData(allChartData, chartType, chartColors) {
         var colorNames = Object.keys(chartColors);
         var colorName = colorNames[index % colorNames.length];
         var newColor = chartColors[colorName];
-        // return chartDataSet(x.name, x[chartType], newColor);
         switch (x.name) {
-         case "China":
-          return chartDataSet(x.name, x[chartType], 'rgb(211,211,211)');
-         default:
-          return chartDataSet(x.name, x[chartType], newColor);
-       }
-        // switch (chartType) {
-        //   case "confirmed":
-        //     return chartDataSet(x.name, x.confirmed, newColor);
-        //   case "death":
-        //     return chartDataSet(x.name, x.death, newColor);
-        //   case "recovered":
-        //     return chartDataSet(x.name, x.recovered, newColor);
-        //   case "active":
-        //     return chartDataSet(x.name, x.active, newColor);
-        //   case "confirmed_daily":
-        //     return chartDataSet(x.name, x.confirmed_daily, newColor);
-        //   case "death_daily":
-        //     return chartDataSet(x.name, x.death_daily, newColor);
-        //   case "recovered_daily":
-        //     return chartDataSet(x.name, x.recovered_daily, newColor);
-        //   case "net_daily":
-        //     return chartDataSet(x.name, x[chartType], newColor);
-        //   default:
-        //     return chartDataSet(x.name, x.confirmed, newColor)
-        // }
-
+          case "China":
+            return chartDataSet(x.name, x[chartType], 'rgb(211,211,211)');
+          default:
+            return chartDataSet(x.name, x[chartType], newColor);
+        }
       })
   }
 }
