@@ -22,6 +22,8 @@ class CoronaChart extends React.Component {
     this.toggleWeekView = this.toggleWeekView.bind(this);
     this.updateDayZeroView = this.updateDayZeroView.bind(this);
     this.showOrHide = this.showOrHide.bind(this);
+    this.showFastest = this.showFastest.bind(this);
+    this.showSlowest = this.showSlowest.bind(this);
     this.sinceWord = this.sinceWord.bind(this);
 
     this.chartColors =
@@ -65,9 +67,6 @@ class CoronaChart extends React.Component {
         this.hideDataset(label);
       });
     }
-    if (this.allChartDataOriginal === undefined) {
-      this.allChartDataOriginal = this.state.allChartData;
-    }
     this.logScaleView();
   }
 
@@ -95,6 +94,8 @@ class CoronaChart extends React.Component {
             toggleWeekView={this.toggleWeekView}
             updateDayZeroView={this.updateDayZeroView}
             showOrHide={this.showOrHide}
+            showFastest={this.showFastest}
+            showSlowest={this.showSlowest}
           />
         </div>
         <div className="chart-container">{chart}</div>
@@ -123,6 +124,10 @@ class CoronaChart extends React.Component {
     });
     this.hideDataset("China");
     // this.hideRandomDataset();
+
+    if (this.allChartDataOriginal === undefined) {
+      this.allChartDataOriginal = this.state.allChartData;
+    }
   }
 
   toggleLogScaleView(chartType) {
@@ -291,6 +296,49 @@ class CoronaChart extends React.Component {
         chart.getDatasetMeta(i).hidden = null;
       });
     }
+    chart.update();
+  }
+
+  showFastest(amount) {
+    var dayRange = 8;
+    this.showFastOrSlowest(amount, (a, b) => {
+      var listA = a[this.props.chartType];
+      var listB = b[this.props.chartType];
+      var deltaA = listA[listA.length-1] - listA[listA.length-dayRange];
+      var deltaB = listB[listB.length-1] - listB[listB.length-dayRange];
+      return deltaB - deltaA;
+    });
+  }
+
+  showSlowest(amount) {
+    var dayRange = 8;
+    this.showFastOrSlowest(amount, (a, b) => {
+      var listA = a[this.props.chartType];
+      var listB = b[this.props.chartType];
+      var deltaA = listA[listA.length-1] - listA[listA.length-dayRange];
+      var deltaB = listB[listB.length-1] - listB[listB.length-dayRange];
+      return deltaA - deltaB;
+    });
+  }
+
+  showFastOrSlowest(amount, sortFun) {
+    var chart = this.chartReference.current.chartInstance;
+    var datasets0 = chart.data.datasets;
+    var datasetLabels =
+      [...this.allChartDataOriginal.numbers]
+        .sort(sortFun)
+        .filter((x) => x.name !== "China")
+        .slice(0, amount)
+        .map((x) => x.name);
+
+    datasets0.forEach((d, i) => {
+      if (datasetLabels.includes(d.label)) {
+        chart.getDatasetMeta(i).hidden = null;
+      } else {
+        chart.getDatasetMeta(i).hidden = true;
+      }
+    });
+
     chart.update();
   }
 

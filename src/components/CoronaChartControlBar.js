@@ -28,6 +28,12 @@ class CoronaChartControlBar extends React.Component {
           <div className="chart-button-right">
             <Button color="secondary" onClick={() => this.props.showOrHide()} >Show / Hide All</Button>
           </div>
+          <div className="chart-button-right">
+            <Button color="secondary" onClick={() => this.props.showFastest(15)} >Top 15 (7-Day Diff)</Button>
+          </div>
+          <div className="chart-button-right">
+            <Button color="secondary" onClick={() => this.props.showSlowest(15)} >Bottom 15 (7-Day Diff)</Button>
+          </div>
         </div>
         <div className="chart-buttons-container-right">
           {weekViewSwitch}

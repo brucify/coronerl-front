@@ -93,6 +93,9 @@ h6.layout-appbar-text {
 .chart-buttons-container-left {
   order: 1;
   /* background-color: pink; */
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .chart-button-right > button {
