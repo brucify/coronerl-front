@@ -24,6 +24,8 @@ class CoronaChart extends React.Component {
     this.showOrHide = this.showOrHide.bind(this);
     this.showFastest = this.showFastest.bind(this);
     this.showSlowest = this.showSlowest.bind(this);
+    this.showTopTen = this.showTopTen.bind(this);
+    this.showBottomTen = this.showBottomTen.bind(this);
     this.sinceWord = this.sinceWord.bind(this);
 
     this.chartColors =
@@ -96,6 +98,8 @@ class CoronaChart extends React.Component {
             showOrHide={this.showOrHide}
             showFastest={this.showFastest}
             showSlowest={this.showSlowest}
+            showTopTen={this.showTopTen}
+            showBottomTen={this.showBottomTen}
           />
         </div>
         <div className="chart-container">{chart}</div>
@@ -301,7 +305,7 @@ class CoronaChart extends React.Component {
 
   showFastest(amount) {
     var dayRange = 8;
-    this.showFastOrSlowest(amount, (a, b) => {
+    this.showSelectedDatasets(amount, (a, b) => {
       var listA = a[this.props.chartType];
       var listB = b[this.props.chartType];
       var deltaA = listA[listA.length-1] - listA[listA.length-dayRange];
@@ -312,7 +316,7 @@ class CoronaChart extends React.Component {
 
   showSlowest(amount) {
     var dayRange = 8;
-    this.showFastOrSlowest(amount, (a, b) => {
+    this.showSelectedDatasets(amount, (a, b) => {
       var listA = a[this.props.chartType];
       var listB = b[this.props.chartType];
       var deltaA = listA[listA.length-1] - listA[listA.length-dayRange];
@@ -321,7 +325,23 @@ class CoronaChart extends React.Component {
     });
   }
 
-  showFastOrSlowest(amount, sortFun) {
+  showTopTen(amount) {
+    this.showSelectedDatasets(amount, (a, b) => {
+      var listA = a[this.props.chartType];
+      var listB = b[this.props.chartType];
+      return listB[listB.length-1] - listA[listA.length-1];
+    });
+  }
+
+  showBottomTen(amount) {
+    this.showSelectedDatasets(amount, (a, b) => {
+      var listA = a[this.props.chartType];
+      var listB = b[this.props.chartType];
+      return listA[listA.length-1] - listB[listB.length-1];
+    });
+  }
+
+  showSelectedDatasets(amount, sortFun) {
     var chart = this.chartReference.current.chartInstance;
     var datasets0 = chart.data.datasets;
     var datasetLabels =
