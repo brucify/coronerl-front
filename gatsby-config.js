@@ -10,7 +10,7 @@ module.exports = {
     title: "COVID19curves",
     titleTemplate: "%s - Compare the coronavirus curves per country",
     description: "Compare the coronavirus COVID-19 curves per country",
-    url: "https://www.covid19curves.se",
+    url: "https://www.covid19curves.nu",
     image: "/images/preview-667x375.png", // Path to your image you placed in the 'static' folder
     twitterUsername: "@brucify",
     keyWords: "Which countries are flattening the COVID-19 curve, coronavirus, graph, statistics, covid-19 curves, chart, flatten the curve, The Hammer and the Dance, Where is my country on the Coronavirus curve"

@@ -76,20 +76,20 @@ function apiUrl(drawerItem) {
     if (process.env.NODE_ENV === 'production') {
       switch (drawerItem) {
         case "Global":
-          return "https://api.coronastats.nu/global";
+          return "https://api.coronastats.nu/global/preset";
         case "Sweden":
           return "https://api.coronastats.nu/sweden";
         default:
-          return "https://api.coronastats.nu/global";
+          return "https://api.coronastats.nu/global/preset";
       }
     } else {
       switch (drawerItem) {
         case "Global":
-          return "http://localhost:8080/global";
+          return "http://localhost:8080/global/preset";
         case "Sweden":
           return "http://localhost:8080/sweden";
         default:
-          return "http://localhost:8080/global";
+          return "http://localhost:8080/global/preset";
       }
     }
   }
