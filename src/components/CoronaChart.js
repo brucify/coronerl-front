@@ -2,12 +2,14 @@ import React from 'react';
 import {Line} from 'react-chartjs-2';
 import update from 'immutability-helper';
 import CoronaChartControlBar from '../components/CoronaChartControlBar'
+import CoronaDialog from '../components/CoronaDialog'
 
 class CoronaChart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      allChartData: this.props.allChartData
+      allChartData: this.props.allChartData,
+      countries: []
     };
     this.chartReference = React.createRef();
     this.isDayZeroView = false;
@@ -80,7 +82,6 @@ class CoronaChart extends React.Component {
                           this.chartOptions,
                           this.chartColors);
 
-
     return (
       <div className="chart-section">
         <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
@@ -103,6 +104,10 @@ class CoronaChart extends React.Component {
           />
         </div>
         <div className="chart-container">{chart}</div>
+        <CoronaDialog
+          countries={this.state.countries}
+          fetchForCountry={this.props.fetchForCountry}
+        />
       </div>
     )
   }
@@ -121,17 +126,24 @@ class CoronaChart extends React.Component {
     }
   }
 
-  updateData(result) {
+  updateWithGlobalPreset(result) {
     this.allChartDataOriginal = result;
     this.setState({
-      allChartData: result
+      allChartData: result,
+      countries: result.countries
     });
     this.hideDataset("China");
     // this.hideRandomDataset();
+  }
 
-    if (this.allChartDataOriginal === undefined) {
-      this.allChartDataOriginal = this.state.allChartData;
-    }
+  updateWithNewDataset(result) {
+    var oldCountries = this.allChartDataOriginal.numbers.map((x) => x.name);
+    result.numbers.forEach((x, i) => {
+      if (!oldCountries.includes(x.name)) {
+        this.allChartDataOriginal.numbers.push(x);
+      }
+    });
+    this.redrawChart(this.props.chartType);
   }
 
   toggleLogScaleView(chartType) {

@@ -15,11 +15,11 @@ class CoronaGlobal extends React.Component {
     super(props);
     this.allChartDataPrevious = undefined;
     this.chartReference = React.createRef();
-
+    this.fetchForCountry = this.fetchForCountry.bind(this);
   }
 
   componentDidMount() {
-    this.fetchFromUrl(apiUrl(this.props.drawerItem));
+    this.fetchPreset(this.props.drawerItem);
   }
 
   render() {
@@ -28,6 +28,7 @@ class CoronaGlobal extends React.Component {
                ref={o.ref}
                chartType={o.type}
                allChartData={initialChartData}
+               fetchForCountry={this.fetchForCountry}
              />
     });
 
@@ -40,7 +41,8 @@ class CoronaGlobal extends React.Component {
     )
   }
 
-  fetchFromUrl(url) {
+  fetchPreset(drawerItem) {
+    var url = apiUrl(drawerItem)
     fetch(url)
       .then(res => res.json())
       .then(
@@ -48,12 +50,43 @@ class CoronaGlobal extends React.Component {
           // var fetchedTypes = Object.keys(result.numbers[0]);
           // this.props.chartTypes.forEach((o, i) => {
           //   if (fetchedTypes.includes(o.type)) {
-          //     o.ref.current.updateData(result);
+          //     o.ref.current.updateWithGlobalPreset(result);
           //   }
           // });
           mendData(result);
           this.props.chartTypes.map((o) => {
-            o.ref.current.updateData(result);
+            o.ref.current.updateWithGlobalPreset(result);
+            return o;
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      );
+  }
+
+  fetchForCountry(ids) {
+    var url = apiUrl("GlobalId") + "/" + ids.join(",");
+    console.log(url);
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          // var fetchedTypes = Object.keys(result.numbers[0]);
+          // this.props.chartTypes.forEach((o, i) => {
+          //   if (fetchedTypes.includes(o.type)) {
+          //     o.ref.current.updateWithGlobalPreset(result);
+          //   }
+          // });
+          mendData(result);
+          this.props.chartTypes.map((o) => {
+            o.ref.current.updateWithNewDataset(result);
             return o;
           });
         },
@@ -72,24 +105,28 @@ class CoronaGlobal extends React.Component {
 
 export default CoronaGlobal;
 
-function apiUrl(drawerItem) {
+function apiUrl(key) {
     if (process.env.NODE_ENV === 'production') {
-      switch (drawerItem) {
+      switch (key) {
         case "Global":
-          return "https://api.coronastats.nu/global/preset";
+          return "https://api.coronastats.nu/global";
+        case "GlobalId":
+          return "https://api.coronastats.nu/global";
         case "Sweden":
           return "https://api.coronastats.nu/sweden";
         default:
-          return "https://api.coronastats.nu/global/preset";
+          return "https://api.coronastats.nu/global";
       }
     } else {
-      switch (drawerItem) {
+      switch (key) {
         case "Global":
-          return "http://localhost:8080/global/preset";
+          return "http://localhost:8080/global";
+        case "GlobalId":
+          return "http://localhost:8080/global";
         case "Sweden":
           return "http://localhost:8080/sweden";
         default:
-          return "http://localhost:8080/global/preset";
+          return "http://localhost:8080/global";
       }
     }
   }
