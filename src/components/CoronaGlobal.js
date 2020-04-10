@@ -27,6 +27,7 @@ class CoronaGlobal extends React.Component {
       return <CoronaChart
                ref={o.ref}
                chartType={o.type}
+               drawerItem={this.props.drawerItem}
                allChartData={initialChartData}
                fetchForCountry={this.fetchForCountry}
              />

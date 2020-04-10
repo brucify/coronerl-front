@@ -38,21 +38,21 @@ export default (props) => {
           <div className="chart-button-right">
             <FormControlLabel
               className="chart-button-right-text"
-              control={<Switch size="small" onChange={() => props.toggleLogScaleView(props.chartType)} />}
+              control={<Switch size="small" onChange={() => props.toggleLogScaleView()} />}
               label="Log"
             />
           </div>
           <div className="chart-button-right">
             <FormControlLabel
               className="chart-button-right-text"
-              control={<Switch size="small" onChange={() => props.togglePerCapitaView(props.chartType)} />}
+              control={<Switch size="small" onChange={() => props.togglePerCapitaView()} />}
               label="Per 1M Capita"
             />
           </div>
           <div className="chart-button-right">
             <FormControlLabel
               className="chart-button-right-text"
-              control={<Switch size="small" onChange={() => props.toggleDayZeroView(props.chartType)} />}
+              control={<Switch size="small" onChange={() => props.toggleDayZeroView()} />}
               label="Day 0"
             />
             <span className="chart-button-right-text">since</span>
@@ -64,9 +64,9 @@ export default (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
-              onChange={(e) => props.updateDayZeroView(props.chartType, e.target.value)}
+              onChange={(e) => props.updateDayZeroView(e.target.value)}
             />
-            <span className="chart-button-right-text">{props.sinceWord(props.chartType)}</span>
+            <span className="chart-button-right-text">{props.sinceWord()}</span>
           </div>
         </div>
       </div>

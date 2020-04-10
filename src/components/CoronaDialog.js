@@ -56,7 +56,7 @@ export default function CoronaDialog(props) {
                {...params}
                variant="outlined"
                label="Datasets"
-               placeholder="Favorites"
+               placeholder="Datasets"
              />
             )}
           />

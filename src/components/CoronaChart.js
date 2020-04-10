@@ -81,6 +81,14 @@ class CoronaChart extends React.Component {
                           this.props.chartType,
                           this.chartOptions,
                           this.chartColors);
+    let dialog;
+    if (this.props.drawerItem === "Global") {
+      dialog =
+        <CoronaDialog
+          countries={this.state.countries}
+          fetchForCountry={this.props.fetchForCountry}
+        />
+    }
 
     return (
       <div className="chart-section">
@@ -104,16 +112,13 @@ class CoronaChart extends React.Component {
           />
         </div>
         <div className="chart-container">{chart}</div>
-        <CoronaDialog
-          countries={this.state.countries}
-          fetchForCountry={this.props.fetchForCountry}
-        />
+        {dialog}
       </div>
     )
   }
 
-  sinceWord(chartType) {
-    switch (chartType) {
+  sinceWord() {
+    switch (this.props.chartType) {
       case "death":           return "deaths";
       case "death_daily":     return "deaths a day";
       case "recovered":       return "recovered";
@@ -146,30 +151,30 @@ class CoronaChart extends React.Component {
     this.redrawChart(this.props.chartType);
   }
 
-  toggleLogScaleView(chartType) {
+  toggleLogScaleView() {
     this.isLogScaleView = !this.isLogScaleView;
     this.logScaleView();
   }
 
-  toggleDayZeroView(chartType) {
+  toggleDayZeroView() {
     this.isDayZeroView = !this.isDayZeroView;
-    this.redrawChart(chartType);
+    this.redrawChart(this.props.chartType);
   }
 
-  toggleWeekView(chartType) {
+  toggleWeekView() {
     this.isWeekView = !this.isWeekView;
-    this.redrawChart(chartType);
+    this.redrawChart(this.props.chartType);
   }
 
-  togglePerCapitaView(chartType) {
+  togglePerCapitaView() {
     this.isPerCapitaView = !this.isPerCapitaView;
-    this.redrawChart(chartType);
+    this.redrawChart(this.props.chartType);
   }
 
-  updateDayZeroView(chartType, integer) {
+  updateDayZeroView(integer) {
     this.dayZaroNum = integer;
     if (this.isDayZeroView) {
-      this.redrawChart(chartType);
+      this.redrawChart(this.props.chartType);
     }
   }
 
