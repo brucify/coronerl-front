@@ -138,6 +138,15 @@ class CoronaChart extends React.Component {
       countries: result.countries
     });
     this.hideDataset("China");
+    // TODO A/B testing
+    // if (hasLangCode(["sv","sv-se"])) {
+    //   this.showOnlyDataset([ "Sweden"
+    //                        , "Norway"
+    //                        , "Denmark"
+    //                        , "Finland"
+    //                        , "United Kingdom"
+    //                        ]);
+    // }
     // this.hideRandomDataset();
   }
 
@@ -148,7 +157,7 @@ class CoronaChart extends React.Component {
         this.allChartDataOriginal.numbers.push(x);
       }
     });
-    this.redrawChart(this.props.chartType);
+    this.redrawChart();
   }
 
   toggleLogScaleView() {
@@ -158,41 +167,42 @@ class CoronaChart extends React.Component {
 
   toggleDayZeroView() {
     this.isDayZeroView = !this.isDayZeroView;
-    this.redrawChart(this.props.chartType);
+    this.redrawChart();
   }
 
   toggleWeekView() {
     this.isWeekView = !this.isWeekView;
-    this.redrawChart(this.props.chartType);
+    this.redrawChart();
   }
 
   togglePerCapitaView() {
     this.isPerCapitaView = !this.isPerCapitaView;
-    this.redrawChart(this.props.chartType);
+    this.redrawChart();
   }
 
   updateDayZeroView(integer) {
     this.dayZaroNum = integer;
     if (this.isDayZeroView) {
-      this.redrawChart(this.props.chartType);
+      this.redrawChart();
     }
   }
 
-  redrawChart(chartType) {
+  redrawChart() {
     this.hiddenLabels = this.getCurrentHiddenLabels();
-    var newData = this.yieldChartData(chartType);
+    var newData = this.yieldChartData();
     this.setState({ allChartData: newData });
   }
 
-  yieldChartData(chartType) {
+  yieldChartData() {
     var newData;
-    newData = this.dayZeroView(this.allChartDataOriginal, chartType);
-    newData = this.perCapitaView(newData, chartType);
-    newData = this.weekView(newData, chartType);
+    newData = this.dayZeroView(this.allChartDataOriginal);
+    newData = this.perCapitaView(newData);
+    newData = this.weekView(newData);
     return newData;
   }
 
-  dayZeroView(allChartData0, chartType) {
+  dayZeroView(allChartData0) {
+    var chartType = this.props.chartType;
     if (this.isDayZeroView) {
       return update(allChartData0, {
         numbers: {
@@ -217,7 +227,8 @@ class CoronaChart extends React.Component {
     }
   }
 
-  weekView(allChartData0, chartType) {
+  weekView(allChartData0) {
+    var chartType = this.props.chartType;
     if (this.isWeekView) {
       return update(allChartData0, {
         numbers: {
@@ -250,7 +261,8 @@ class CoronaChart extends React.Component {
     }
   }
 
-  perCapitaView(allChartData0, chartType) {
+  perCapitaView(allChartData0) {
+    var chartType = this.props.chartType;
     if (this.isPerCapitaView) {
       return update(allChartData0, {
         numbers: {
@@ -404,6 +416,17 @@ class CoronaChart extends React.Component {
     chart.update();
   }
 
+  showOnlyDataset(countryNames) {
+    var chart = this.chartReference.current.chartInstance;
+    var datasets = chart.data.datasets;
+    for (var i=0; i<datasets.length; i++) {
+      if(!countryNames.includes(datasets[i].label)) {
+        chart.getDatasetMeta(i).hidden = true;
+      }
+    }
+    chart.update();
+  }
+
   hideRandomDataset() {
     var chart = this.chartReference.current.chartInstance;
     var datasets = chart.data.datasets;
@@ -516,3 +539,12 @@ function chartDataSet(country, data, newColor) {
     pointHitRadius: 10
   }
 }
+
+//TODO A/B testing
+// function hasLangCode(list) {
+//   var userLang = navigator.language || navigator.userLanguage;
+//   var cond1 = (navigator.languages !== undefined &&
+//     navigator.languages.some((x)=>list.includes(x.toLowerCase())));
+//   var cond2 = (list).includes(userLang.toLowerCase());
+//   return (cond1 || cond2);
+// }

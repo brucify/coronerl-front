@@ -15,7 +15,7 @@ export default (props) => {
         <div className="chart-button-right">
           <FormControlLabel
             checked={props.isWeekView}
-            control={<Switch size="small" onChange={() => props.toggleWeekView(props.chartType)} />}
+            control={<Switch size="small" onChange={() => props.toggleWeekView()} />}
             label="Week"
           />
         </div>

@@ -54,7 +54,7 @@ class CoronaGlobal extends React.Component {
           //     o.ref.current.updateWithGlobalPreset(result);
           //   }
           // });
-          mendData(result);
+          mendForCn(result);
           this.props.chartTypes.map((o) => {
             o.ref.current.updateWithGlobalPreset(result);
             return o;
@@ -79,13 +79,7 @@ class CoronaGlobal extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
-          // var fetchedTypes = Object.keys(result.numbers[0]);
-          // this.props.chartTypes.forEach((o, i) => {
-          //   if (fetchedTypes.includes(o.type)) {
-          //     o.ref.current.updateWithGlobalPreset(result);
-          //   }
-          // });
-          mendData(result);
+          mendForCn(result);
           this.props.chartTypes.map((o) => {
             o.ref.current.updateWithNewDataset(result);
             return o;
@@ -132,14 +126,16 @@ function apiUrl(key) {
     }
   }
 
-function mendData(result) {
+function mendForCn(result) {
+  mendData(result, ["zh","zh-cn","zh-hans"], (x) => !["Taiwan*"].includes(x.name));
+}
+
+function mendData(result, list, filterFun) {
   var userLang = navigator.language || navigator.userLanguage;
-  var list = ["zh","zh-cn","zh-hans"];
   var cond1 = (navigator.languages !== undefined &&
     navigator.languages.some((x)=>list.includes(x.toLowerCase())));
   var cond2 = (list).includes(userLang.toLowerCase());
   if(cond1 || cond2) {
-    result.numbers = result.numbers.filter((x) => !["Taiwan*"].includes(x.name));
+    result.numbers = result.numbers.filter(filterFun);
   }
-  return result;
 }
