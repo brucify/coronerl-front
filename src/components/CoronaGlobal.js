@@ -109,6 +109,8 @@ function apiUrl(key) {
           return "https://api.coronastats.nu/global";
         case "Sweden":
           return "https://api.coronastats.nu/sweden";
+        case "Poland":
+          return "https://api.coronastats.nu/poland";
         default:
           return "https://api.coronastats.nu/global";
       }
@@ -120,6 +122,8 @@ function apiUrl(key) {
           return "http://localhost:8080/global";
         case "Sweden":
           return "http://localhost:8080/sweden";
+        case "Poland":
+          return "http://localhost:8080/poland";
         default:
           return "http://localhost:8080/global";
       }
