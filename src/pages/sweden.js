@@ -20,6 +20,7 @@ const IndexPage = () => (
       <CoronaGlobal
         drawerItem="Sweden"
         chartTypes={chartTypes}
+        topAndBottomNum={5}
       />
     </div>
     <div className="copyright-section">

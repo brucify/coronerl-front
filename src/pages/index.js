@@ -24,6 +24,7 @@ const IndexPage = () => (
       <CoronaGlobal
         drawerItem="Global"
         chartTypes={chartTypes}
+        topAndBottomNum={10}
       />
     </div>
     <div className="copyright-section">

@@ -96,6 +96,7 @@ class CoronaChart extends React.Component {
         <div className="chart-buttons-section">
           <CoronaChartControlBar
             chartType={this.props.chartType}
+            topAndBottomNum={this.props.topAndBottomNum}
             isWeekView={this.isWeekView}
             dayZaroNum={this.dayZaroNum}
             sinceWord={this.sinceWord}
@@ -356,17 +357,25 @@ class CoronaChart extends React.Component {
 
   showTopTen(amount) {
     this.showSelectedDatasets(amount, (a, b) => {
-      var listA = a[this.props.chartType];
-      var listB = b[this.props.chartType];
-      return listB[listB.length-1] - listA[listA.length-1];
+      if (a[this.props.chartType] !== undefined && b[this.props.chartType]) {
+        var listA = a[this.props.chartType];
+        var listB = b[this.props.chartType];
+        return listB[listB.length-1] - listA[listA.length-1];
+      } else {
+        return 0;
+      }
     });
   }
 
   showBottomTen(amount) {
     this.showSelectedDatasets(amount, (a, b) => {
-      var listA = a[this.props.chartType];
-      var listB = b[this.props.chartType];
-      return listA[listA.length-1] - listB[listB.length-1];
+      if (a[this.props.chartType] !== undefined && b[this.props.chartType]) {
+        var listA = a[this.props.chartType];
+        var listB = b[this.props.chartType];
+        return listA[listA.length-1] - listB[listB.length-1];
+      } else {
+        return 0;
+      }
     });
   }
 

@@ -25,11 +25,13 @@ const IndexPage = () => (
       <CoronaGlobal
         drawerItem="Poland"
         chartTypes={chartTypes}
+        topAndBottomNum={5}
       />
     </div>
     <div className="copyright-section">
-      <p>Data source: <OutboundLink href="https://www.dataportal.se/sv/datasets/525_1424/antal-fall-av-covid-19-i-sverige-per-dag-och-region">Folkhälsomyndigheten</OutboundLink></p>
-      <p>Population data: <OutboundLink href="https://www.scb.se/hitta-statistik/statistik-efter-amne/befolkning/befolkningens-sammansattning/befolkningsstatistik/pong/tabell-och-diagram/kvartals--och-halvarsstatistik--kommun-lan-och-riket/kvartal-1-2019/">Statistikmyndigheten SCB</OutboundLink></p>
+      <p>Data source: <OutboundLink href="https://github.com/dtandev/coronavirus">GeoSiN Scientific Club Members from University of Warmia and Mazury in Olsztyn, Poland</OutboundLink></p>
+      <p>Population data: <OutboundLink href="https://stat.gov.pl/obszary-tematyczne/ludnosc/ludnosc/ludnosc-stan-i-struktura-w-przekroju-terytorialnym-stan-w-dniu-30-06-2019,6,26.html">Główny Urząd Statystyczny
+</OutboundLink></p>
       <CoronaFooter />
     </div>
   </Layout>

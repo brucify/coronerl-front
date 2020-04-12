@@ -9,12 +9,12 @@ import InfoIcon from '@material-ui/icons/Info';
 
 import CoronaDrawer from '../components/CoronaDrawer'
 
-// const drawerItems = ['Global'];
 const drawerItems = [ "Global"
                     , "Sweden"
                     , "Poland"
+                    // , 'USA'
                     , "About this site"
-                    ];//, 'USA'];
+                    ];
 
 const drawerHref = (text) => {
   switch (text) {

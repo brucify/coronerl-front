@@ -20,6 +20,7 @@ export default (props) => {
           />
         </div>
     }
+    let number = props.topAndBottomNum ? props.topAndBottomNum : 15;
     return (
       <div className="chart-buttons-container">
         <div className="chart-buttons-container-left">
@@ -27,10 +28,10 @@ export default (props) => {
             <Button color="secondary" onClick={() => props.showOrHide()} >Show / Hide All</Button>
           </div>
           <div className="chart-button-right">
-            <Button color="secondary" onClick={() => props.showTopTen(15)} >Top 15</Button>
+            <Button color="secondary" onClick={() => props.showTopTen(number)} >Top {number}</Button>
           </div>
           <div className="chart-button-right">
-            <Button color="secondary" onClick={() => props.showBottomTen(15)} >Bottom 15</Button>
+            <Button color="secondary" onClick={() => props.showBottomTen(number)} >Bottom {number}</Button>
           </div>
         </div>
         <div className="chart-buttons-container-right">
