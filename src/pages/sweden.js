@@ -5,7 +5,7 @@ import Layout from "../components/layout"
 import SEO from '../components/SEO'
 import CoronaFooter from '../components/CoronaFooter'
 import CoronaTopBar from '../components/CoronaTopBar'
-import CoronaGlobal from '../components/CoronaGlobal'
+import CoronaChartGroup from '../components/CoronaChartGroup'
 
 const chartTypes = [ {type: "confirmed",       ref: React.createRef()}
                    , {type: "confirmed_daily", ref: React.createRef()}
@@ -17,7 +17,7 @@ const IndexPage = () => (
     <SEO />
     <CoronaTopBar />
     <div className="corona-section">
-      <CoronaGlobal
+      <CoronaChartGroup
         drawerItem="Sweden"
         chartTypes={chartTypes}
         topAndBottomNum={5}

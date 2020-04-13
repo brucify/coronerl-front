@@ -47,7 +47,7 @@ export default function CoronaDialog(props) {
           <Autocomplete
             multiple
             id="tags-outlined"
-            options={props.countries}
+            options={props.datasets}
             onChange={handleChange}
             getOptionLabel={(option) => option.name}
             filterSelectedOptions

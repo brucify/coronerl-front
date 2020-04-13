@@ -10,7 +10,7 @@ const initialChartData = {
       confirmed: [50, 32, 44, 51, 66, 75, 80]}]
 };
 
-class CoronaGlobal extends React.Component {
+class CoronaChartGroup extends React.Component {
   constructor(props) {
     super(props);
     this.allChartDataPrevious = undefined;
@@ -99,7 +99,7 @@ class CoronaGlobal extends React.Component {
   }
 }
 
-export default CoronaGlobal;
+export default CoronaChartGroup;
 
 function apiUrl(key) {
     if (process.env.NODE_ENV === 'production') {
@@ -112,6 +112,8 @@ function apiUrl(key) {
           return "https://api.coronastats.nu/sweden";
         case "Poland":
           return "https://api.coronastats.nu/poland";
+        case "Datasets":
+          return "https://api.coronastats.nu/dataset";
         default:
           return "https://api.coronastats.nu/global";
       }
@@ -125,6 +127,8 @@ function apiUrl(key) {
           return "http://localhost:8080/sweden";
         case "Poland":
           return "http://localhost:8080/poland";
+        case "Datasets":
+          return "http://localhost:8080/dataset";
         default:
           return "http://localhost:8080/global";
       }

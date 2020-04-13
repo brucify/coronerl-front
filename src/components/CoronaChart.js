@@ -9,7 +9,7 @@ class CoronaChart extends React.Component {
     super(props);
     this.state = {
       allChartData: this.props.allChartData,
-      countries: []
+      datasets: []
     };
     this.chartReference = React.createRef();
     this.isDayZeroView = false;
@@ -85,7 +85,7 @@ class CoronaChart extends React.Component {
     if (this.props.drawerItem === "Global") {
       dialog =
         <CoronaDialog
-          countries={this.state.countries}
+          datasets={this.state.datasets}
           fetchForCountry={this.props.fetchForCountry}
         />
     }
@@ -136,7 +136,7 @@ class CoronaChart extends React.Component {
     this.allChartDataOriginal = result;
     this.setState({
       allChartData: result,
-      countries: result.countries
+      datasets: result.countries
     });
     this.hideDataset("China");
     // TODO A/B testing
@@ -494,13 +494,13 @@ function makeChart(chartReference, allChartData, chartType, chartOptions, chartC
     chart = <Line
               ref={chartReference}
               data={chartDataForType} options={chartOptions} redraw
-              // getDatasetAtEvent={(dataset) => {datasets.for}}
+              // getDatasetAtEvent={(datasets) => {datasets.for}}
             />
   } else {
     chart = <Line
               ref={chartReference}
               data={chartDataForType} options={chartOptions} redraw
-              // getDatasetAtEvent={(dataset) => {}}
+              // getDatasetAtEvent={(datasets) => {}}
             />
   }
   return chart;

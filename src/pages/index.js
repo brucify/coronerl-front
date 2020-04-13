@@ -3,7 +3,7 @@ import { OutboundLink } from "gatsby-plugin-google-gtag"
 import Layout from "../components/layout"
 import SEO from '../components/SEO'
 import CoronaTopBar from '../components/CoronaTopBar'
-import CoronaGlobal from '../components/CoronaGlobal'
+import CoronaChartGroup from '../components/CoronaChartGroup'
 import CoronaFooter from '../components/CoronaFooter'
 
 const chartTypes = [ {type: "death",           ref: React.createRef()}
@@ -21,7 +21,7 @@ const IndexPage = () => (
     <SEO />
     <CoronaTopBar />
     <div className="corona-section">
-      <CoronaGlobal
+      <CoronaChartGroup
         drawerItem="Global"
         chartTypes={chartTypes}
         topAndBottomNum={10}
