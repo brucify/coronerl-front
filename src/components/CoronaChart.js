@@ -1,8 +1,10 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
+import {Scatter} from 'react-chartjs-2';
 import update from 'immutability-helper';
 import CoronaChartControlBar from '../components/CoronaChartControlBar'
 import CoronaDialog from '../components/CoronaDialog'
+import {sinceWord} from '../components/CoronaChartControlBar'
 
 class CoronaChart extends React.Component {
   constructor(props) {
@@ -14,7 +16,13 @@ class CoronaChart extends React.Component {
     this.chartReference = React.createRef();
     this.isDayZeroView = false;
     this.isPerCapitaView = false;
-    this.isLogScaleView = false;
+    if ([ 'death_vs_pop_density'
+        , 'confirmed_vs_pop_density'
+      ].includes(this.props.chartType)) {
+      this.isLogScaleView = true;
+    } else {
+      this.isLogScaleView = false;
+    }
     this.isWeekView = false;
     this.dayZaroNum = 1;
 
@@ -28,7 +36,6 @@ class CoronaChart extends React.Component {
     this.showSlowest = this.showSlowest.bind(this);
     this.showTopTen = this.showTopTen.bind(this);
     this.showBottomTen = this.showBottomTen.bind(this);
-    this.sinceWord = this.sinceWord.bind(this);
 
     this.chartColors =
       { red: 'rgb(255, 99, 132)'
@@ -98,8 +105,8 @@ class CoronaChart extends React.Component {
             chartType={this.props.chartType}
             topAndBottomNum={this.props.topAndBottomNum}
             isWeekView={this.isWeekView}
+            isLogScaleView={this.isLogScaleView}
             dayZaroNum={this.dayZaroNum}
-            sinceWord={this.sinceWord}
             toggleDayZeroView={this.toggleDayZeroView}
             togglePerCapitaView={this.togglePerCapitaView}
             toggleLogScaleView={this.toggleLogScaleView}
@@ -116,20 +123,6 @@ class CoronaChart extends React.Component {
         {dialog}
       </div>
     )
-  }
-
-  sinceWord() {
-    switch (this.props.chartType) {
-      case "death":           return "deaths";
-      case "death_daily":     return "deaths a day";
-      case "recovered":       return "recovered";
-      case "recovered_daily": return "recovered a day";
-      case "confirmed":       return "cases";
-      case "confirmed_daily": return "cases a day";
-      case "active":          return "cases";
-      case "net_daily":       return "cases a day";
-      default:                return "cases";
-    }
   }
 
   updateWithGlobalPreset(result) {
@@ -284,31 +277,43 @@ class CoronaChart extends React.Component {
 
   logScaleView() {
     var chart = this.chartReference.current.chartInstance;
-    if (this.linearCallbackOriginal === undefined) {
-      this.linearCallbackOriginal = chart.options.scales.yAxes[0].ticks.callback
+    if (this.linearCallbackOriginaly === undefined) {
+      this.linearCallbackOriginaly = chart.options.scales.yAxes[0].ticks.callback
+    }
+    if (this.linearCallbackOriginalx === undefined) {
+      this.linearCallbackOriginalx = chart.options.scales.xAxes[0].ticks.callback
     }
 
     if (this.isLogScaleView) {
-      chart.options.scales.yAxes[0].type = "logarithmic";
-      chart.options.scales.yAxes[0].ticks.callback = (value, i, values) => {
-        // if (value === 5000000) return "5000000";
+      var logCallback = (value, i, values) => {
         if (value === 1000000) return "1000000";
-        // if (value === 500000) return "500000";
         if (value === 100000) return "100000";
-        // if (value === 50000) return "50000";
         if (value === 10000) return "10000";
-        // if (value === 5000) return "5000";
         if (value === 1000) return "1000";
-        // if (value === 500) return "500";
         if (value === 100) return "100";
         if (value === 10) return "10";
-        // if (value === 5) return "5";
         if (value === 0) return "0";
         return null;
       };
+      chart.options.scales.yAxes[0].type = "logarithmic";
+      chart.options.scales.yAxes[0].ticks.callback = logCallback;
+      if ([ 'death_vs_pop_density'
+          , 'confirmed_vs_pop_density'
+          ].includes(this.props.chartType)) {
+        chart.options.scales.xAxes[0].type = "logarithmic";
+        chart.options.scales.xAxes[0].ticks.callback = logCallback;
+      }
     } else {
       chart.options.scales.yAxes[0].type = "linear";
-      chart.options.scales.yAxes[0].ticks.callback = this.linearCallbackOriginal;
+      if ([ 'death_vs_pop_density'
+          , 'confirmed_vs_pop_density'
+          ].includes(this.props.chartType)) {
+        chart.options.scales.xAxes[0].type = "linear";
+      } else {
+        chart.options.scales.xAxes[0].type = "category";
+      }
+      chart.options.scales.yAxes[0].ticks.callback = this.linearCallbackOriginaly;
+      chart.options.scales.xAxes[0].ticks.callback = this.linearCallbackOriginalx;
     }
     chart.update();
   }
@@ -480,6 +485,12 @@ function makeTitle(chartType) {
     case "death_vs_icu":
       title = "COVID-19 reported vs deaths vs in ICU";
       break;
+    case "death_vs_pop_density":
+      title = "COVID-19 deaths vs population density";
+      break;
+    case "confirmed_vs_pop_density":
+      title = "COVID-19 confirmed cases vs population density";
+      break;
     default:
       title = "COVID-19 data";
       break;
@@ -488,33 +499,147 @@ function makeTitle(chartType) {
 }
 
 function makeChart(chartReference, allChartData, chartType, chartOptions, chartColors) {
-  let chart;
-  var chartDataForType = chartData(allChartData, chartType, chartColors);
-  if (chartType === "confirmed_daily") {
-    chart = <Line
-              ref={chartReference}
-              data={chartDataForType} options={chartOptions} redraw
-              // getDatasetAtEvent={(datasets) => {datasets.for}}
-            />
+  if ([ 'death_vs_pop_density'
+      , 'confirmed_vs_pop_density'
+      ].includes(chartType)) {
+    return(
+      <Scatter
+        ref={chartReference}
+        data={chartDataForScatter(allChartData, chartType, chartColors)}
+        options={chartOptionsForScatter(chartType)}
+        redraw
+        // getDatasetAtEvent={(datasets) => {datasets.for}}
+      />
+    );
   } else {
-    chart = <Line
-              ref={chartReference}
-              data={chartDataForType} options={chartOptions} redraw
-              // getDatasetAtEvent={(datasets) => {}}
-            />
+    return (
+      <Line
+        ref={chartReference}
+        data={chartDataForLine(allChartData, chartType, chartColors)}
+        options={chartOptions}
+        redraw
+        // getDatasetAtEvent={(datasets) => {}}
+      />
+    );
   }
-  return chart;
 }
 
-function chartData(allChartData, chartType, chartColors) {
+function chartDataForScatter(allChartData, chartType, chartColors) {
+  let datasets;
+  if(!allChartData.initial_data) {
+    datasets =
+      allChartData.numbers.map((o, index) => {
+        var popDensity = o.population / o.land_area;
+        var type = scatterDataType(chartType)
+        return {
+          label: o.name,
+          fill: true,
+          backgroundColor: nextColor(chartColors, index),
+          pointBorderColor: nextColor(chartColors, index),
+          pointBackgroundColor: nextColor(chartColors, index),
+          pointBorderWidth: 3,
+          pointHoverRadius: 15,
+          pointHoverBackgroundColor: nextColor(chartColors, index),
+          pointHoverBorderColor: nextColor(chartColors, index),
+          pointHoverBorderWidth: 2,
+          pointRadius: 8,
+          pointHitRadius: 10,
+          data: [
+            { x: popDensity, y: o[type][o[type].length-1] }
+          ]
+        };
+      })
+  } else {
+    datasets = [{
+      label: 'Global',
+      fill: true,
+      backgroundColor: 'rgba(75,192,192,0.4)',
+      pointBorderColor: 'rgba(75,192,192,1)',
+      pointBackgroundColor: '#fff',
+      pointBorderWidth: 3,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+      pointHoverBorderColor: 'rgba(220,220,220,1)',
+      pointHoverBorderWidth: 2,
+      pointRadius: 5,
+      pointHitRadius: 10,
+      data: [
+        { x: 65, y: 75 },
+        { x: 59, y: 49 },
+        { x: 80, y: 90 },
+        { x: 81, y: 29 },
+        { x: 56, y: 36 },
+        { x: 55, y: 25 },
+        { x: 40, y: 18 },
+      ]
+    }];
+  }
+  return {
+    labels: allChartData.numbers.map((x) => x.name),
+    datasets: datasets
+  };
+}
+
+function chartOptionsForScatter(chartType) {
+  return {
+    maintainAspectRatio: false,
+    legend: {
+       display: true,
+       align: "start",
+       position: "bottom"
+    },
+    scales: {
+      xAxes: [{
+        // type: "logarithmic",
+        scaleLabel: {
+          display: true,
+          labelString: 'Population density'
+        }
+      }],
+      yAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: yAxisTitle(chartType),
+          padding: -2
+        }
+      }]
+    },
+    tooltips: {
+       callbacks: {
+          label: function(tooltipItem, data) {
+             var label = data.labels[tooltipItem.datasetIndex];
+             return label + ': (' + tooltipItem.yLabel + ' '+sinceWord(chartType)+', ' + tooltipItem.xLabel.toFixed(2) + ' per km2)';
+             // var label = data.labels[tooltipItem.index];
+             // return label + ': (' + tooltipItem.xLabel + ' per km2, ' + tooltipItem.yLabel + ' deaths)';
+          }
+       }
+    }
+ };
+}
+
+function scatterDataType(chartType) {
+  switch (chartType) {
+    case "death_vs_pop_density":     return "death";
+    case "confirmed_vs_pop_density": return "confirmed";
+    default:                         return "confirmed";
+  }
+}
+
+function yAxisTitle(chartType) {
+  switch (chartType) {
+    case "death_vs_pop_density":     return "COVID-19 deaths";
+    case "confirmed_vs_pop_density": return "COVID-19 confirmed cases";
+    default:                         return "COVID-19 cases";
+  }
+}
+
+function chartDataForLine(allChartData, chartType, chartColors) {
   return {
     labels: allChartData.days,
     datasets: allChartData.numbers
       .filter(x => x[chartType] !== undefined)
       .map((x, index) => {
-        var colorNames = Object.keys(chartColors);
-        var colorName = colorNames[index % colorNames.length];
-        var newColor = chartColors[colorName];
+        var newColor = nextColor(chartColors, index);
         switch (x.name) {
           case "China":
             return chartDataSet(x.name, x[chartType], 'rgb(211,211,211)');
@@ -523,6 +648,12 @@ function chartData(allChartData, chartType, chartColors) {
         }
       })
   }
+}
+
+function nextColor(chartColors, index) {
+  var colorNames = Object.keys(chartColors);
+  var colorName = colorNames[index % colorNames.length];
+  return chartColors[colorName];
 }
 
 function chartDataSet(country, data, newColor) {

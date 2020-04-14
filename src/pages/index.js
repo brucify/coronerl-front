@@ -8,8 +8,10 @@ import CoronaFooter from '../components/CoronaFooter'
 
 const chartTypes = [ {type: "death",           ref: React.createRef()}
                    , {type: "death_daily",     ref: React.createRef()}
+                   , {type: "death_vs_pop_density",     ref: React.createRef()}
                    , {type: "confirmed",       ref: React.createRef()}
                    , {type: "confirmed_daily", ref: React.createRef()}
+                   , {type: "confirmed_vs_pop_density", ref: React.createRef()}
                    , {type: "active",          ref: React.createRef()}
                    , {type: "recovered",       ref: React.createRef()}
                    , {type: "recovered_daily", ref: React.createRef()}

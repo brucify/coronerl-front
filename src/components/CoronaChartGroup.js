@@ -2,6 +2,7 @@ import React from 'react';
 import CoronaChart from '../components/CoronaChart'
 
 const initialChartData = {
+  initial_data: true,
   days: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
   numbers:
     [{name: "XXXX",

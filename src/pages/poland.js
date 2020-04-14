@@ -19,7 +19,7 @@ const chartTypes = [ {type: "death",           ref: React.createRef()}
 
 const IndexPage = () => (
   <Layout>
-    <SEO />
+    <SEO title="Poland - COVID19curves" />
     <CoronaTopBar />
     <div className="corona-section">
       <CoronaChartGroup

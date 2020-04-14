@@ -14,7 +14,7 @@ const chartTypes = [ {type: "confirmed",       ref: React.createRef()}
 
 const IndexPage = () => (
   <Layout>
-    <SEO />
+    <SEO title="Sweden - COVID19curves" />
     <CoronaTopBar />
     <div className="corona-section">
       <CoronaChartGroup
