@@ -1,6 +1,11 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
 import {Scatter} from 'react-chartjs-2';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+
 import update from 'immutability-helper';
 import CoronaChartControlBar from '../components/CoronaChartControlBar'
 import CoronaDialog from '../components/CoronaDialog'
@@ -98,30 +103,36 @@ class CoronaChart extends React.Component {
     }
 
     return (
-      <div className="chart-section">
-        <h2 style={{display: 'flex', justifyContent: 'center'}}>{title}</h2>
-        <div className="chart-buttons-section">
-          <CoronaChartControlBar
-            chartType={this.props.chartType}
-            topAndBottomNum={this.props.topAndBottomNum}
-            isWeekView={this.isWeekView}
-            isLogScaleView={this.isLogScaleView}
-            dayZaroNum={this.dayZaroNum}
-            toggleDayZeroView={this.toggleDayZeroView}
-            togglePerCapitaView={this.togglePerCapitaView}
-            toggleLogScaleView={this.toggleLogScaleView}
-            toggleWeekView={this.toggleWeekView}
-            updateDayZeroView={this.updateDayZeroView}
-            showOrHide={this.showOrHide}
-            showFastest={this.showFastest}
-            showSlowest={this.showSlowest}
-            showTopTen={this.showTopTen}
-            showBottomTen={this.showBottomTen}
-          />
-        </div>
-        <div className="chart-container">{chart}</div>
-        {dialog}
-      </div>
+      <Card className="chart-section" variant="outlined">
+        <CardContent>
+          <div className="chart-buttons-section">
+            <Typography variant="h6" component="h2">
+              {title}
+            </Typography>
+            <CoronaChartControlBar
+              chartType={this.props.chartType}
+              topAndBottomNum={this.props.topAndBottomNum}
+              isWeekView={this.isWeekView}
+              isLogScaleView={this.isLogScaleView}
+              dayZaroNum={this.dayZaroNum}
+              toggleDayZeroView={this.toggleDayZeroView}
+              togglePerCapitaView={this.togglePerCapitaView}
+              toggleLogScaleView={this.toggleLogScaleView}
+              toggleWeekView={this.toggleWeekView}
+              updateDayZeroView={this.updateDayZeroView}
+              showOrHide={this.showOrHide}
+              showFastest={this.showFastest}
+              showSlowest={this.showSlowest}
+              showTopTen={this.showTopTen}
+              showBottomTen={this.showBottomTen}
+            />
+          </div>
+          <div className="chart-container">{chart}</div>
+        </CardContent>
+        <CardActions>
+          {dialog}
+        </CardActions>
+      </Card>
     )
   }
 

@@ -40,7 +40,7 @@ export default function CoronaDialog(props) {
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Add datasets</DialogTitle>
-        <DialogContent>
+        <DialogContent className="add-dataset-dialig" >
           <DialogContentText>
             Start typing
           </DialogContentText>
