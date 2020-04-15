@@ -285,10 +285,36 @@ class CoronaChart extends React.Component {
     }
 
     if (this.isLogScaleView) {
-      var logCallback = (value, i, values) => {
-        if (value === 1000000) return "1000000";
-        if (value === 100000) return "100000";
-        if (value === 10000) return "10000";
+      var logCallbackY = (value, i, values) => {
+        // if (value === 31622777) return "30M";
+        // if (value === 3162277) return "3M";
+        // if (value === 300000) return "300K";
+        // if (value === 30000) return "30K";
+        // if (value === 3000) return "3000";
+        // if (value === 300) return "300";
+        // if (value === 30) return "30";
+        // if (value === 3) return "3";
+        if (value === 1000000) return "1M";
+        if (value === 100000) return "100K";
+        if (value === 10000) return "10K";
+        if (value === 1000) return "1000";
+        if (value === 100) return "100";
+        if (value === 10) return "10";
+        if (value === 0) return "0";
+        return null;
+      };
+      var logCallbackX = (value, i, values) => {
+        if (value === 31622777) return "30M";
+        if (value === 3162277) return "3M";
+        if (value === 300000) return "300K";
+        if (value === 30000) return "30K";
+        if (value === 3000) return "3000";
+        if (value === 300) return "300";
+        if (value === 30) return "30";
+        if (value === 3) return "3";
+        if (value === 1000000) return "1M";
+        if (value === 100000) return "100K";
+        if (value === 10000) return "10K";
         if (value === 1000) return "1000";
         if (value === 100) return "100";
         if (value === 10) return "10";
@@ -296,12 +322,14 @@ class CoronaChart extends React.Component {
         return null;
       };
       chart.options.scales.yAxes[0].type = "logarithmic";
-      chart.options.scales.yAxes[0].ticks.callback = logCallback;
+      chart.options.scales.yAxes[0].bounds = "ticks";
+      chart.options.scales.yAxes[0].ticks.callback = logCallbackY;
       if ([ 'death_vs_pop_density'
           , 'confirmed_vs_pop_density'
           ].includes(this.props.chartType)) {
         chart.options.scales.xAxes[0].type = "logarithmic";
-        chart.options.scales.xAxes[0].ticks.callback = logCallback;
+        chart.options.scales.xAxes[0].bounds = "ticks";
+        chart.options.scales.xAxes[0].ticks.callback = logCallbackX;
       }
     } else {
       chart.options.scales.yAxes[0].type = "linear";
@@ -548,7 +576,7 @@ function chartDataForScatter(allChartData, chartType, chartColors) {
             { x: popDensity, y: o[type][o[type].length-1] }
           ]
         };
-      })
+      });
   } else {
     datasets = [{
       label: 'Global',
@@ -586,14 +614,36 @@ function chartOptionsForScatter(chartType) {
     legend: {
        display: true,
        align: "start",
-       position: "bottom"
+       position: "bottom",
+       // onClick: function(e, legendItem) {
+       //    var index = legendItem.datasetIndex;
+       //    var ci = this.chart;
+       //    var alreadyHidden = (ci.getDatasetMeta(index).hidden === null) ? false : ci.getDatasetMeta(index).hidden;
+       //
+       //    ci.data.datasets.forEach(function(e, i) {
+       //      var meta = ci.getDatasetMeta(i);
+       //      console.log(meta);
+       //
+       //      if (i !== index) {
+       //        if (!alreadyHidden) {
+       //          meta.hidden = meta.hidden === null ? !meta.hidden : null;
+       //        } else if (meta.hidden === null) {
+       //          meta.hidden = true;
+       //        }
+       //      } else if (i === index) {
+       //        meta.hidden = null;
+       //      }
+       //    });
+       //
+       //    ci.update();
+       //  }
     },
     scales: {
       xAxes: [{
         // type: "logarithmic",
         scaleLabel: {
           display: true,
-          labelString: 'Population density'
+          labelString: 'Less dense <--      Population density      --> More dense'
         }
       }],
       yAxes: [{
@@ -627,8 +677,8 @@ function scatterDataType(chartType) {
 
 function yAxisTitle(chartType) {
   switch (chartType) {
-    case "death_vs_pop_density":     return "COVID-19 deaths";
-    case "confirmed_vs_pop_density": return "COVID-19 confirmed cases";
+    case "death_vs_pop_density":     return "Less deaths <--      COVID-19 deaths      --> More deaths";
+    case "confirmed_vs_pop_density": return "Less cases <--      COVID-19 confirmed cases      --> More cases";
     default:                         return "COVID-19 cases";
   }
 }
