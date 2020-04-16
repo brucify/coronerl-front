@@ -524,6 +524,9 @@ function makeTitle(chartType) {
     case "death_vs_icu":
       title = "COVID-19 reported vs deaths vs in ICU";
       break;
+    case "death_vs_icu_daily":
+      title = "COVID-19 new cases per day";
+      break;
     case "death_vs_pop_density":
       title = "COVID-19 deaths vs population density";
       break;

@@ -10,6 +10,7 @@ import CoronaChartGroup from '../components/CoronaChartGroup'
 const chartTypes = [ {type: "confirmed",       ref: React.createRef()}
                    , {type: "confirmed_daily", ref: React.createRef()}
                    , {type: "death_vs_icu",    ref: React.createRef()}
+                   , {type: "death_vs_icu_daily",    ref: React.createRef()}
                    ];
 
 const IndexPage = () => (
