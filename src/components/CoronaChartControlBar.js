@@ -66,9 +66,7 @@ export default (props) => {
         </div>
     }
 
-    if (![ 'death_vs_pop_density'
-         , 'confirmed_vs_pop_density'
-         ].includes(props.chartType)) {
+    if (true) {
       perCapitaSwitch =
         <div className="chart-button-right">
           <FormControlLabel

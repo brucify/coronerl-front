@@ -267,7 +267,7 @@ class CoronaChart extends React.Component {
   }
 
   perCapitaView(allChartData0) {
-    var chartType = this.props.chartType;
+    var chartType = scatterDataType(this.props.chartType);
     if (this.isPerCapitaView) {
       return update(allChartData0, {
         numbers: {
@@ -669,7 +669,7 @@ function chartOptionsForScatter(chartType) {
        callbacks: {
           label: function(tooltipItem, data) {
              var label = data.labels[tooltipItem.datasetIndex];
-             return label + ': (' + tooltipItem.yLabel + ' '+sinceWord(chartType)+', ' + tooltipItem.xLabel.toFixed(2) + ' per km2)';
+             return label + ': (' + tooltipItem.yLabel.toFixed(2) + ' '+sinceWord(chartType)+', ' + tooltipItem.xLabel.toFixed(2) + ' per km2)';
              // var label = data.labels[tooltipItem.index];
              // return label + ': (' + tooltipItem.xLabel + ' per km2, ' + tooltipItem.yLabel + ' deaths)';
           }
@@ -682,7 +682,7 @@ function scatterDataType(chartType) {
   switch (chartType) {
     case "death_vs_pop_density":     return "death";
     case "confirmed_vs_pop_density": return "confirmed";
-    default:                         return "confirmed";
+    default:                         return chartType;
   }
 }
 

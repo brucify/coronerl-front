@@ -23,7 +23,7 @@ const IndexPage = () => (
       <p><OutboundLink href="https://stat.gov.pl/obszary-tematyczne/ludnosc/ludnosc/ludnosc-stan-i-struktura-w-przekroju-terytorialnym-stan-w-dniu-30-06-2019,6,26.html">Główny Urząd Statystyczny</OutboundLink> (Poland)</p>
       <p><OutboundLink href="https://support.google.com/analytics/answer/6004245">Privacy notice</OutboundLink></p>
       <img alt="Hack the crisis" style={{borderWidth:0, height:100, width:100}} src="/images/Hack the crisis - black transp.png" />
-      <p>A submission to <OutboundLink href="https://www.hackthecrisis.se/">Hack the Crisis hackathon 2020</OutboundLink> in Sweden</p>
+      <p>A submission to <OutboundLink href="https://www.hackthecrisis.se/">Hack the Crisis hackathon 2020</OutboundLink> in Sweden, <OutboundLink href="https://www.guaana.com/challenges/PAScgtXfAYDsaqjtp/results/zMRLepRnXNxoChj5x">Save Lives Digital Solution</OutboundLink> track.</p>
       <CoronaFooter />
     </div>
   </Layout>

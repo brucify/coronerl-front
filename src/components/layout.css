@@ -110,6 +110,8 @@ h6.layout-appbar-text {
 
 .chart-button-right > button {
   padding-top: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
   font-size: 0.83em;
 }
 
