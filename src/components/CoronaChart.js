@@ -14,14 +14,14 @@ import {sinceWord} from '../components/CoronaChartControlBar'
 class CoronaChart extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      allChartData: this.props.allChartData,
-      datasets: [],
-      isDayZeroView:   false,
-      isPerCapitaView: false,
-      isWeekView:      false,
-      dayZaroNum: 1
-    };
+    this.state =
+      { allChartData:    this.props.allChartData
+      , datasets:        []
+      , isDayZeroView:   false
+      , isPerCapitaView: false
+      , isWeekView:      false
+      , dayZaroNum:      1
+      };
     this.isLogScaleView = false;
     this.chartReference = React.createRef();
     this.toggleDayZeroView   = this.toggleDayZeroView.bind(this);
@@ -149,7 +149,6 @@ class CoronaChart extends React.Component {
   }
 
   updateWithGlobalPreset(result) {
-    this.allChartDataOriginal = result;
     this.setState({
       allChartData: result,
       datasets: result.countries
@@ -168,13 +167,18 @@ class CoronaChart extends React.Component {
   }
 
   updateWithNewDataset(result) {
-    var oldCountries = this.allChartDataOriginal.numbers.map((x) => x.name);
+    var oldCountries = this.state.allChartData.numbers.map((x) => x.name);
     result.numbers.forEach((x, i) => {
       if (!oldCountries.includes(x.name)) {
-        this.allChartDataOriginal.numbers.push(x);
+        this.setState({
+          allChartData: update(this.state.allChartData, {
+            numbers: {
+              $set: [...this.state.allChartData.numbers, x]
+            }
+          })
+        });
       }
     });
-    this.refreshState();
   }
 
   toggleLogScaleView() {
@@ -202,12 +206,6 @@ class CoronaChart extends React.Component {
     if (this.state.isDayZeroView) {
       this.setState({ dayZaroNum: integer });
     }
-  }
-
-  refreshState() {
-    this.hiddenLabels = this.getCurrentHiddenLabels();
-    var newData = this.yieldChartData(this.allChartDataOriginal);
-    this.setState({ allChartData: newData });
   }
 
   yieldChartData(oldData) {
@@ -439,7 +437,7 @@ class CoronaChart extends React.Component {
     var chart = this.chartReference.current.chartInstance;
     var datasets0 = chart.data.datasets;
     var datasetLabels =
-      [...this.allChartDataOriginal.numbers]
+      [...this.state.allChartData.numbers]
         .sort(sortFun)
         .filter((x) => x.name !== "China")
         .slice(0, amount)
