@@ -5,12 +5,31 @@ import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
 
 export default (props) => {
-    const [logChecked, setLogChecked] = React.useState(props.isLogScaleView);
+    const [weekChecked,      setweekChecked]      = React.useState(props.isWeekView);
+    const [logChecked,       setLogChecked]       = React.useState(props.isLogScaleView);
+    const [perCapitaChecked, setPerCapitaChecked] = React.useState(props.isPerCapitaView);
+    const [dayZeroChecked,   setDayZeroChecked]   = React.useState(props.isDayZeroView);
+
+    let topButton;
+    let bottomButton;
     let weekViewSwitch;
-    let topSwitch;
-    let bottomSwitch;
+    let logSwitch;
     let dayZeroSwitch;
     let perCapitaSwitch;
+
+    if (![ 'death_vs_pop_density'
+         , 'confirmed_vs_pop_density'
+         ].includes(props.chartType)) {
+      let number = props.topAndBottomNum ? props.topAndBottomNum : 15;
+      topButton =
+        <div className="chart-button-right">
+          <Button color="secondary" onClick={() => props.showTopTen(number)} >Top {number}</Button>
+        </div>
+      bottomButton =
+        <div className="chart-button-right">
+          <Button color="secondary" onClick={() => props.showBottomTen(number)} >Bottom {number}</Button>
+        </div>
+    }
 
     if ([ 'confirmed_daily'
         , 'death_daily'
@@ -20,24 +39,34 @@ export default (props) => {
       weekViewSwitch =
         <div className="chart-button-right">
           <FormControlLabel
-            checked={props.isWeekView}
-            control={<Switch size="small" onChange={() => props.toggleWeekView()} />}
+            checked={weekChecked}
+            control={<Switch size="small" onChange={() => {setweekChecked(!weekChecked); props.toggleWeekView();}} />}
             label="Week"
           />
         </div>
     }
 
-    if (![ 'death_vs_pop_density'
-         , 'confirmed_vs_pop_density'
-         ].includes(props.chartType)) {
-      let number = props.topAndBottomNum ? props.topAndBottomNum : 15;
-      topSwitch =
+    if (true) {
+      logSwitch =
         <div className="chart-button-right">
-          <Button color="secondary" onClick={() => props.showTopTen(number)} >Top {number}</Button>
+          <FormControlLabel
+            className="chart-button-right-text"
+            checked={logChecked}
+            control={<Switch size="small" onChange={() => {setLogChecked(!logChecked); props.toggleLogScaleView();}} />}
+            label="Log"
+          />
         </div>
-      bottomSwitch =
+    }
+
+    if (true) {
+      perCapitaSwitch =
         <div className="chart-button-right">
-          <Button color="secondary" onClick={() => props.showBottomTen(number)} >Bottom {number}</Button>
+          <FormControlLabel
+            className="chart-button-right-text"
+            checked={perCapitaChecked}
+            control={<Switch size="small" onChange={() => {setPerCapitaChecked(!perCapitaChecked); props.togglePerCapitaView();}} />}
+            label="Per 1M Capita"
+          />
         </div>
     }
 
@@ -48,7 +77,8 @@ export default (props) => {
         <div className="chart-button-right">
           <FormControlLabel
             className="chart-button-right-text"
-            control={<Switch size="small" onChange={() => props.toggleDayZeroView()} />}
+            checked={dayZeroChecked}
+            control={<Switch size="small" onChange={() => {setDayZeroChecked(!dayZeroChecked); props.toggleDayZeroView();}} />}
             label="Day 0"
           />
           <span className="chart-button-right-text">since</span>
@@ -66,36 +96,18 @@ export default (props) => {
         </div>
     }
 
-    if (true) {
-      perCapitaSwitch =
-        <div className="chart-button-right">
-          <FormControlLabel
-            className="chart-button-right-text"
-            control={<Switch size="small" onChange={() => props.togglePerCapitaView()} />}
-            label="Per 1M Capita"
-          />
-        </div>
-    }
-
     return (
       <div className="chart-buttons-container">
         <div className="chart-buttons-container-left">
           <div className="chart-button-right">
             <Button color="secondary" onClick={() => props.showOrHide()} >Show / Hide All</Button>
           </div>
-          {topSwitch}
-          {bottomSwitch}
+          {topButton}
+          {bottomButton}
         </div>
         <div className="chart-buttons-container-right">
           {weekViewSwitch}
-          <div className="chart-button-right">
-            <FormControlLabel
-              className="chart-button-right-text"
-              checked={logChecked}
-              control={<Switch size="small" onChange={() => {setLogChecked(!logChecked); props.toggleLogScaleView();}} />}
-              label="Log"
-            />
-          </div>
+          {logSwitch}
           {perCapitaSwitch}
           {dayZeroSwitch}
         </div>

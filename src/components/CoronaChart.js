@@ -16,31 +16,24 @@ class CoronaChart extends React.Component {
     super(props);
     this.state = {
       allChartData: this.props.allChartData,
-      datasets: []
+      datasets: [],
+      isDayZeroView:   false,
+      isPerCapitaView: false,
+      isWeekView:      false,
+      dayZaroNum: 1
     };
+    this.isLogScaleView = false;
     this.chartReference = React.createRef();
-    this.isDayZeroView = false;
-    this.isPerCapitaView = false;
-    if ([ 'death_vs_pop_density'
-        , 'confirmed_vs_pop_density'
-      ].includes(this.props.chartType)) {
-      this.isLogScaleView = true;
-    } else {
-      this.isLogScaleView = false;
-    }
-    this.isWeekView = false;
-    this.dayZaroNum = 1;
-
-    this.toggleDayZeroView = this.toggleDayZeroView.bind(this);
+    this.toggleDayZeroView   = this.toggleDayZeroView.bind(this);
     this.togglePerCapitaView = this.togglePerCapitaView.bind(this);
-    this.toggleLogScaleView = this.toggleLogScaleView.bind(this);
-    this.toggleWeekView = this.toggleWeekView.bind(this);
-    this.updateDayZeroView = this.updateDayZeroView.bind(this);
-    this.showOrHide = this.showOrHide.bind(this);
-    this.showFastest = this.showFastest.bind(this);
-    this.showSlowest = this.showSlowest.bind(this);
-    this.showTopTen = this.showTopTen.bind(this);
-    this.showBottomTen = this.showBottomTen.bind(this);
+    this.toggleLogScaleView  = this.toggleLogScaleView.bind(this);
+    this.toggleWeekView      = this.toggleWeekView.bind(this);
+    this.updateDayZeroView   = this.updateDayZeroView.bind(this);
+    this.showOrHide          = this.showOrHide.bind(this);
+    this.showFastest         = this.showFastest.bind(this);
+    this.showSlowest         = this.showSlowest.bind(this);
+    this.showTopTen          = this.showTopTen.bind(this);
+    this.showBottomTen       = this.showBottomTen.bind(this);
 
     this.chartColors =
       { red: 'rgb(255, 99, 132)'
@@ -75,6 +68,23 @@ class CoronaChart extends React.Component {
          position: "bottom"
        }
     };
+    if ([ 'death_vs_pop_density'
+        , 'confirmed_vs_pop_density'
+        ].includes(this.props.chartType)) {
+      this.isLogScaleView = true;
+    }
+    if (this.props.drawerItem === "Global") {
+      if ([ 'death_daily'
+          , 'confirmed_daily'
+          ].includes(this.props.chartType)) {
+        this.isLogScaleView      = true;
+        this.state.isWeekView    = true;
+        this.state.isDayZeroView = true;
+        if (['confirmed_daily'].includes(this.props.chartType)) {
+          this.state.dayZaroNum    = 30;
+        }
+      }
+    }
   }
 
   componentDidUpdate() {
@@ -89,7 +99,7 @@ class CoronaChart extends React.Component {
   render() {
     var title = makeTitle(this.props.chartType);
     var chart = makeChart(this.chartReference,
-                          this.state.allChartData,
+                          this.yieldChartData(this.state.allChartData),
                           this.props.chartType,
                           this.chartOptions,
                           this.chartColors);
@@ -110,21 +120,23 @@ class CoronaChart extends React.Component {
               {title}
             </Typography>
             <CoronaChartControlBar
-              chartType={this.props.chartType}
-              topAndBottomNum={this.props.topAndBottomNum}
-              isWeekView={this.isWeekView}
-              isLogScaleView={this.isLogScaleView}
-              dayZaroNum={this.dayZaroNum}
-              toggleDayZeroView={this.toggleDayZeroView}
-              togglePerCapitaView={this.togglePerCapitaView}
-              toggleLogScaleView={this.toggleLogScaleView}
-              toggleWeekView={this.toggleWeekView}
-              updateDayZeroView={this.updateDayZeroView}
-              showOrHide={this.showOrHide}
-              showFastest={this.showFastest}
-              showSlowest={this.showSlowest}
-              showTopTen={this.showTopTen}
-              showBottomTen={this.showBottomTen}
+              chartType           ={this.props.chartType}
+              topAndBottomNum     ={this.props.topAndBottomNum}
+              isWeekView          ={this.state.isWeekView}
+              isLogScaleView      ={this.isLogScaleView}
+              isPerCapitaView     ={this.state.isPerCapitaView}
+              isDayZeroView       ={this.state.isDayZeroView}
+              dayZaroNum          ={this.state.dayZaroNum}
+              showOrHide          ={this.showOrHide}
+              // showFastest         ={this.showFastest}
+              // showSlowest         ={this.showSlowest}
+              showTopTen          ={this.showTopTen}
+              showBottomTen       ={this.showBottomTen}
+              toggleWeekView      ={this.toggleWeekView}
+              toggleLogScaleView  ={this.toggleLogScaleView}
+              togglePerCapitaView ={this.togglePerCapitaView}
+              toggleDayZeroView   ={this.toggleDayZeroView}
+              updateDayZeroView   ={this.updateDayZeroView}
             />
           </div>
           <div className="chart-container">{chart}</div>
@@ -162,7 +174,7 @@ class CoronaChart extends React.Component {
         this.allChartDataOriginal.numbers.push(x);
       }
     });
-    this.redrawChart();
+    this.refreshState();
   }
 
   toggleLogScaleView() {
@@ -171,36 +183,36 @@ class CoronaChart extends React.Component {
   }
 
   toggleDayZeroView() {
-    this.isDayZeroView = !this.isDayZeroView;
-    this.redrawChart();
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    this.setState({ isDayZeroView: !this.state.isDayZeroView });
   }
 
   toggleWeekView() {
-    this.isWeekView = !this.isWeekView;
-    this.redrawChart();
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    this.setState({ isWeekView: !this.state.isWeekView });
   }
 
   togglePerCapitaView() {
-    this.isPerCapitaView = !this.isPerCapitaView;
-    this.redrawChart();
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    this.setState({ isPerCapitaView: !this.state.isPerCapitaView });
   }
 
   updateDayZeroView(integer) {
-    this.dayZaroNum = integer;
-    if (this.isDayZeroView) {
-      this.redrawChart();
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    if (this.state.isDayZeroView) {
+      this.setState({ dayZaroNum: integer });
     }
   }
 
-  redrawChart() {
+  refreshState() {
     this.hiddenLabels = this.getCurrentHiddenLabels();
-    var newData = this.yieldChartData();
+    var newData = this.yieldChartData(this.allChartDataOriginal);
     this.setState({ allChartData: newData });
   }
 
-  yieldChartData() {
+  yieldChartData(oldData) {
     var newData;
-    newData = this.dayZeroView(this.allChartDataOriginal);
+    newData = this.dayZeroView(oldData);
     newData = this.perCapitaView(newData);
     newData = this.weekView(newData);
     return newData;
@@ -208,13 +220,13 @@ class CoronaChart extends React.Component {
 
   dayZeroView(allChartData0) {
     var chartType = this.props.chartType;
-    if (this.isDayZeroView) {
+    if (this.state.isDayZeroView) {
       return update(allChartData0, {
         numbers: {
           $set: allChartData0.numbers
             .filter(x => x[chartType] !== undefined)
             .map((obj) => {
-              var x = obj[chartType].findIndex((e) => e >= this.dayZaroNum);
+              var x = obj[chartType].findIndex((e) => e >= this.state.dayZaroNum);
               var sliced = obj[chartType].slice(x, obj[chartType].length);
               // obj[chartType] = sliced;
               // return obj;
@@ -234,7 +246,7 @@ class CoronaChart extends React.Component {
 
   weekView(allChartData0) {
     var chartType = this.props.chartType;
-    if (this.isWeekView) {
+    if (this.state.isWeekView) {
       return update(allChartData0, {
         numbers: {
           $set: allChartData0.numbers
@@ -268,7 +280,7 @@ class CoronaChart extends React.Component {
 
   perCapitaView(allChartData0) {
     var chartType = scatterDataType(this.props.chartType);
-    if (this.isPerCapitaView) {
+    if (this.state.isPerCapitaView) {
       return update(allChartData0, {
         numbers: {
           $set: allChartData0.numbers
@@ -297,14 +309,14 @@ class CoronaChart extends React.Component {
 
     if (this.isLogScaleView) {
       var logCallbackY = (value, i, values) => {
-        // if (value === 31622777) return "30M";
-        // if (value === 3162277) return "3M";
-        // if (value === 300000) return "300K";
-        // if (value === 30000) return "30K";
-        // if (value === 3000) return "3000";
-        // if (value === 300) return "300";
-        // if (value === 30) return "30";
-        // if (value === 3) return "3";
+        if (value === 30000000) return "30M";
+        if (value === 3000000) return "3M";
+        if (value === 300000) return "300K";
+        if (value === 30000) return "30K";
+        if (value === 3000) return "3000";
+        if (value === 300) return "300";
+        if (value === 30) return "30";
+        if (value === 3) return "3";
         if (value === 1000000) return "1M";
         if (value === 100000) return "100K";
         if (value === 10000) return "10K";
@@ -315,8 +327,8 @@ class CoronaChart extends React.Component {
         return null;
       };
       var logCallbackX = (value, i, values) => {
-        if (value === 31622777) return "30M";
-        if (value === 3162277) return "3M";
+        if (value === 30000000) return "30M";
+        if (value === 3000000) return "3M";
         if (value === 300000) return "300K";
         if (value === 30000) return "30K";
         if (value === 3000) return "3000";
@@ -567,6 +579,8 @@ function makeChart(chartReference, allChartData, chartType, chartOptions, chartC
 }
 
 function chartDataForScatter(allChartData, chartType, chartColors) {
+  // const allPop = allChartData.numbers.map((x) => x.population);
+  // console.log(allPop);
   let datasets;
   if(!allChartData.initial_data) {
     datasets =

@@ -14,7 +14,6 @@ const initialChartData = {
 class CoronaChartGroup extends React.Component {
   constructor(props) {
     super(props);
-    this.allChartDataPrevious = undefined;
     this.chartReference = React.createRef();
     this.fetchForCountry = this.fetchForCountry.bind(this);
   }
