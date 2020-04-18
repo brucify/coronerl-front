@@ -5,6 +5,7 @@ import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
 
 export default (props) => {
+    const [maChecked,        setMAChecked]        = React.useState(props.isMAView);
     const [weekChecked,      setweekChecked]      = React.useState(props.isWeekView);
     const [logChecked,       setLogChecked]       = React.useState(props.isLogScaleView);
     const [perCapitaChecked, setPerCapitaChecked] = React.useState(props.isPerCapitaView);
@@ -12,6 +13,7 @@ export default (props) => {
 
     let topButton;
     let bottomButton;
+    let maViewSwitch;
     let weekViewSwitch;
     let logSwitch;
     let dayZeroSwitch;
@@ -28,6 +30,19 @@ export default (props) => {
       bottomButton =
         <div className="chart-button-right">
           <Button color="secondary" onClick={() => props.showBottomTen(number)} >Bottom {number}</Button>
+        </div>
+    }
+
+    if (![ 'death_vs_pop_density'
+         , 'confirmed_vs_pop_density'
+         ].includes(props.chartType)) {
+      maViewSwitch =
+        <div className="chart-button-right">
+          <FormControlLabel
+            checked={maChecked}
+            control={<Switch size="small" onChange={() => {setMAChecked(!maChecked); props.toggleMAView();}} />}
+            label="7-Day MA"
+          />
         </div>
     }
 
@@ -106,6 +121,7 @@ export default (props) => {
           {bottomButton}
         </div>
         <div className="chart-buttons-container-right">
+          {maViewSwitch}
           {weekViewSwitch}
           {logSwitch}
           {perCapitaSwitch}

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
 import {Scatter} from 'react-chartjs-2';
+import sma from 'sma';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -20,6 +21,7 @@ class CoronaChart extends React.Component {
       , isDayZeroView:   false
       , isPerCapitaView: false
       , isWeekView:      false
+      , isMAView:        false
       , dayZaroNum:      1
       };
     this.isLogScaleView = false;
@@ -27,6 +29,7 @@ class CoronaChart extends React.Component {
     this.toggleDayZeroView   = this.toggleDayZeroView.bind(this);
     this.togglePerCapitaView = this.togglePerCapitaView.bind(this);
     this.toggleLogScaleView  = this.toggleLogScaleView.bind(this);
+    this.toggleMAView        = this.toggleMAView.bind(this);
     this.toggleWeekView      = this.toggleWeekView.bind(this);
     this.updateDayZeroView   = this.updateDayZeroView.bind(this);
     this.showOrHide          = this.showOrHide.bind(this);
@@ -123,6 +126,7 @@ class CoronaChart extends React.Component {
               chartType           ={this.props.chartType}
               topAndBottomNum     ={this.props.topAndBottomNum}
               isWeekView          ={this.state.isWeekView}
+              isMAView            ={this.state.isMAView}
               isLogScaleView      ={this.isLogScaleView}
               isPerCapitaView     ={this.state.isPerCapitaView}
               isDayZeroView       ={this.state.isDayZeroView}
@@ -132,6 +136,7 @@ class CoronaChart extends React.Component {
               // showSlowest         ={this.showSlowest}
               showTopTen          ={this.showTopTen}
               showBottomTen       ={this.showBottomTen}
+              toggleMAView        ={this.toggleMAView}
               toggleWeekView      ={this.toggleWeekView}
               toggleLogScaleView  ={this.toggleLogScaleView}
               togglePerCapitaView ={this.togglePerCapitaView}
@@ -191,6 +196,11 @@ class CoronaChart extends React.Component {
     this.setState({ isDayZeroView: !this.state.isDayZeroView });
   }
 
+  toggleMAView() {
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+    this.setState({ isMAView: !this.state.isMAView });
+  }
+
   toggleWeekView() {
     this.hiddenLabels = this.getCurrentHiddenLabels();
     this.setState({ isWeekView: !this.state.isWeekView });
@@ -209,8 +219,9 @@ class CoronaChart extends React.Component {
   }
 
   yieldChartData(oldData) {
-    var newData;
-    newData = this.dayZeroView(oldData);
+    var newData = {...oldData};
+    newData = this.movingAverageView(newData);
+    newData = this.dayZeroView(newData);
     newData = this.perCapitaView(newData);
     newData = this.weekView(newData);
     return newData;
@@ -235,6 +246,36 @@ class CoronaChart extends React.Component {
           $set: Array(allChartData0.days.length).fill().map((x,i)=> {
               return "Day "+i;
           })
+        }
+      });
+    } else {
+      return allChartData0;
+    }
+  }
+
+  movingAverageView(allChartData0) {
+    var chartType = this.props.chartType;
+    if (this.state.isMAView) {
+      return update(allChartData0, {
+        numbers: {
+          $set: allChartData0.numbers
+            .filter(x => x[chartType] !== undefined)
+            .map((obj) => {
+              var newList = sma(obj[chartType], 7).map((x) => {
+                return parseFloat(x);
+              });
+              if (obj.name === "Sweden") {
+                console.log("old: "+chartType);
+                console.log(obj[chartType]);
+                console.log("sma: "+chartType);
+                console.log(newList);
+              }
+
+              return update(obj, {[chartType]: {$set: newList}})
+            })
+        },
+        days: {
+          $set: allChartData0.days.slice(6, allChartData0.days.length-1)
         }
       });
     } else {
