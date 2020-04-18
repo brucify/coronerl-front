@@ -37,79 +37,54 @@ class CoronaChart extends React.Component {
     this.showTopTen          = this.showTopTen.bind(this);
     this.showBottomTen       = this.showBottomTen.bind(this);
 
-    this.chartColors =
-      { red: 'rgb(255, 99, 132)'
-      , yellow: 'rgb(255, 205, 86)'
-      , blue: 'rgb(54, 162, 235)'
-      , salmon: 'rgb(250,128,114)'
-      , pale_golden_rod: 'rgb(238, 232, 170)'
-      , gold: 'rgb(255, 215, 0)'
-      , light_sky_blue: 'rgb(135, 206, 250)'
-      , pink: 'rgb(255, 192, 203)'
-      , light_salmon: 'rgb(255, 160, 122)'
-      , green: 'rgb(75, 192, 192)'
-      , purple: 'rgb(153, 102, 255)'
-      // , grey: 'rgb(201, 203, 207)'
-      , deep_sky_blue: 'rgb(0, 191, 255)'
-      , yellow_green: 'rgb(154, 205, 50)'
-      , orange: 'rgb(255, 159, 64)'
-      , plum: 'rgb(211, 160, 221)'
-      , green_yellow: 'rgb(173, 255, 47)'
-      , dark_orange: 'rgb(255, 140, 0)'
-      , medium_slate_blue	: 'rgb(123, 104, 238)'
-      , light_green: 'rgb(144, 238, 144)'
-      , royal_blue: 'rgb(65, 105, 225)'
-      , dark_turquoise: 'rgb(0, 206, 209)'
-      , orchid: 'rgb(218, 112, 214)'
-      };
-    this.chartOptions = {
-      maintainAspectRatio: false,
-      legend: {
-         display: true,
-         align: "start",
-         position: "bottom"
-       }
-    };
-
     /*
      * chart-specific pre-toggled switches
      */
-    if ([ 'death_vs_pop_density'
-        , 'confirmed_vs_pop_density'
-        ].includes(this.props.chartType)) {
-      this.isLogScaleView = true;
-    }
     if (this.props.drawerItem === "Global") {
-      if ([ 'death'
-          ].includes(this.props.chartType)) {
-        this.isLogScaleView      = true;
-        this.state.isDayZeroView = true;
-      }
-      if ([ 'death_daily'
-          , 'confirmed_daily'
-          ].includes(this.props.chartType)) {
+      if ([ 'death_daily' ].includes(this.props.chartType)) {
+        this.state.dayZaroNum    = 3;
         this.isLogScaleView      = true;
         this.state.isMAView      = true;
         this.state.isDayZeroView = true;
       }
       if ([ 'confirmed_daily'
-          , 'confirmed'
           , 'active'
           ].includes(this.props.chartType)) {
         this.state.dayZaroNum    = 20;
-      } else {
-        this.state.dayZaroNum    = 2;
+        this.isLogScaleView      = true;
+        this.state.isMAView      = true;
+        this.state.isDayZeroView = true;
+      }
+      if ([ 'recovered_daily' ].includes(this.props.chartType)) {
+        this.state.isMAView      = true;
+        this.state.isDayZeroView = true;
+      }
+      if ([ 'net_daily' ].includes(this.props.chartType)) {
+        this.state.isMAView      = true;
+      }
+      if ([ 'death_vs_pop_density'
+          , 'confirmed_vs_pop_density'
+          ].includes(this.props.chartType)) {
+        this.isLogScaleView = true;
       }
     }
     if (this.props.drawerItem === "Sweden") {
-      if ([ 'confirmed_daily'
-          , 'confirmed'
-          ].includes(this.props.chartType)) {
+      this.state.dayZaroNum    = 1;
+      if ([ 'confirmed' ].includes(this.props.chartType)) {
         this.state.isMAView      = true;
         this.state.isDayZeroView = true;
-        if ([ 'confirmed' ].includes(this.props.chartType)) {
-          this.isLogScaleView = true;
-        }
+        this.isLogScaleView = true;
+      }
+      if ([ 'confirmed_daily' ].includes(this.props.chartType)) {
+        this.state.isMAView      = true;
+        this.state.isDayZeroView = true;
+      }
+    }
+    if (this.props.drawerItem === "Poland") {
+      if ([ 'confirmed_daily'
+          , 'net_daily'
+          ].includes(this.props.chartType)) {
+        this.state.isMAView      = true;
       }
     }
   }
@@ -127,9 +102,7 @@ class CoronaChart extends React.Component {
     var title = makeTitle(this.props.chartType);
     var chart = makeChart(this.chartReference,
                           this.yieldChartData(this.state.allChartData),
-                          this.props.chartType,
-                          this.chartOptions,
-                          this.chartColors);
+                          this.props.chartType);
     let dialog;
     if (this.props.drawerItem === "Global") {
       dialog =
@@ -182,7 +155,7 @@ class CoronaChart extends React.Component {
       allChartData: result,
       datasets: result.countries
     });
-    this.hideDataset("China");
+    // this.hideDataset("China");
     // TODO A/B testing
     // if (hasLangCode(["sv","sv-se"])) {
     //   this.showOnlyDataset([ "Sweden"
@@ -202,11 +175,6 @@ class CoronaChart extends React.Component {
     result.numbers.forEach((x, i) => {
       if (!oldCountries.includes(x.name)) {
         this.setState({
-          // allChartData: update(this.state.allChartData, {
-          //   numbers: {
-          //     $set: [...this.state.allChartData.numbers, x]
-          //   }
-          // })
           allChartData: {...this.state.allChartData, numbers: [...this.state.allChartData.numbers, x]}
         });
       }
@@ -239,8 +207,8 @@ class CoronaChart extends React.Component {
   }
 
   updateDayZeroView(integer) {
-    this.hiddenLabels = this.getCurrentHiddenLabels();
     if (this.state.isDayZeroView) {
+      this.hiddenLabels = this.getCurrentHiddenLabels();
       this.setState({ dayZaroNum: integer });
     }
   }
@@ -248,9 +216,9 @@ class CoronaChart extends React.Component {
   yieldChartData(oldData) {
     var newData = {...oldData};
     newData = this.movingAverageView(newData);
-    newData = this.dayZeroView(newData);
-    newData = this.perCapitaView(newData);
-    newData = this.weekView(newData);
+    newData =       this.dayZeroView(newData);
+    newData =     this.perCapitaView(newData);
+    newData =          this.weekView(newData);
     return newData;
   }
 
@@ -264,13 +232,11 @@ class CoronaChart extends React.Component {
               var x = obj[chartType].findIndex((e) => e >= this.state.dayZaroNum);
               var sliced = obj[chartType].slice(x, obj[chartType].length);
               // obj[chartType] = sliced;
-              // return obj;
-              // return update(obj, {[chartType]: {$set: sliced}})
               return {...obj, [chartType]: sliced}
             }),
-        days: Array(allChartData0.days.length).fill().map((x,i)=> {
-              return "Day "+i;
-        })
+        days: Array(allChartData0.days.length)
+                .fill()
+                .map((x,i)=> "Day "+i)
       };
     } else {
       return allChartData0;
@@ -316,12 +282,11 @@ class CoronaChart extends React.Component {
                   x = x+old[i]
                 }
               }
-              // return update(obj, {[chartType]: {$set: newList}})
               return {...obj, [chartType]: newList}
             }),
-        days: Array(Math.round(allChartData0.days.length/7)).fill().map((x,i)=> {
-              return "Week "+(i+1);
-        })
+        days: Array(Math.round(allChartData0.days.length/7))
+                .fill()
+                .map((x,i)=> "Week "+(i+1))
       };
     } else {
       return allChartData0;
@@ -335,10 +300,7 @@ class CoronaChart extends React.Component {
         numbers: allChartData0.numbers
             .filter(x => x[chartType] !== undefined)
             .map((obj) => {
-              var perCapitaList = obj[chartType].map((x) => {
-                return x / obj.population * 1000000;
-              });
-              // return update(obj, {[chartType]: {$set: perCapitaList}})
+              var perCapitaList = obj[chartType].map((x) => x / obj.population * 1000000);
               return {...obj, [chartType]: perCapitaList}
             })
       };
@@ -601,7 +563,33 @@ function makeTitle(chartType) {
   return title;
 }
 
-function makeChart(chartReference, allChartData, chartType, chartOptions, chartColors) {
+function makeChart(chartReference, allChartData, chartType) {
+  const chartColors =
+    { red: 'rgb(255, 99, 132)'
+    , yellow: 'rgb(255, 205, 86)'
+    , blue: 'rgb(54, 162, 235)'
+    , salmon: 'rgb(250,128,114)'
+    , pale_golden_rod: 'rgb(238, 232, 170)'
+    , gold: 'rgb(255, 215, 0)'
+    , light_sky_blue: 'rgb(135, 206, 250)'
+    , pink: 'rgb(255, 192, 203)'
+    , light_salmon: 'rgb(255, 160, 122)'
+    , green: 'rgb(75, 192, 192)'
+    , purple: 'rgb(153, 102, 255)'
+    // , grey: 'rgb(201, 203, 207)'
+    , deep_sky_blue: 'rgb(0, 191, 255)'
+    , yellow_green: 'rgb(154, 205, 50)'
+    , orange: 'rgb(255, 159, 64)'
+    , plum: 'rgb(211, 160, 221)'
+    , green_yellow: 'rgb(173, 255, 47)'
+    , dark_orange: 'rgb(255, 140, 0)'
+    , medium_slate_blue	: 'rgb(123, 104, 238)'
+    , light_green: 'rgb(144, 238, 144)'
+    , royal_blue: 'rgb(65, 105, 225)'
+    , dark_turquoise: 'rgb(0, 206, 209)'
+    , orchid: 'rgb(218, 112, 214)'
+    };
+
   if ([ 'death_vs_pop_density'
       , 'confirmed_vs_pop_density'
       ].includes(chartType)) {
@@ -611,17 +599,23 @@ function makeChart(chartReference, allChartData, chartType, chartOptions, chartC
         data={chartDataForScatter(allChartData, chartType, chartColors)}
         options={chartOptionsForScatter(chartType)}
         redraw
-        // getDatasetAtEvent={(datasets) => {datasets.for}}
       />
     );
   } else {
+    const chartOptions = {
+      maintainAspectRatio: false,
+      legend: {
+         display: true,
+         align: "start",
+         position: "bottom"
+       }
+    };
     return (
       <Line
         ref={chartReference}
         data={chartDataForLine(allChartData, chartType, chartColors)}
         options={chartOptions}
         redraw
-        // getDatasetAtEvent={(datasets) => {}}
       />
     );
   }
