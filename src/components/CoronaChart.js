@@ -7,7 +7,6 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-import update from 'immutability-helper';
 import CoronaChartControlBar from '../components/CoronaChartControlBar'
 import CoronaDialog from '../components/CoronaDialog'
 import {sinceWord} from '../components/CoronaChartControlBar'
@@ -197,15 +196,18 @@ class CoronaChart extends React.Component {
   }
 
   updateWithNewDataset(result) {
+    this.hiddenLabels = this.getCurrentHiddenLabels();
+
     var oldCountries = this.state.allChartData.numbers.map((x) => x.name);
     result.numbers.forEach((x, i) => {
       if (!oldCountries.includes(x.name)) {
         this.setState({
-          allChartData: update(this.state.allChartData, {
-            numbers: {
-              $set: [...this.state.allChartData.numbers, x]
-            }
-          })
+          // allChartData: update(this.state.allChartData, {
+          //   numbers: {
+          //     $set: [...this.state.allChartData.numbers, x]
+          //   }
+          // })
+          allChartData: {...this.state.allChartData, numbers: [...this.state.allChartData.numbers, x]}
         });
       }
     });
@@ -255,24 +257,21 @@ class CoronaChart extends React.Component {
   dayZeroView(allChartData0) {
     var chartType = this.props.chartType;
     if (this.state.isDayZeroView) {
-      return update(allChartData0, {
-        numbers: {
-          $set: allChartData0.numbers
+      return {...allChartData0,
+        numbers: allChartData0.numbers
             .filter(x => x[chartType] !== undefined)
             .map((obj) => {
               var x = obj[chartType].findIndex((e) => e >= this.state.dayZaroNum);
               var sliced = obj[chartType].slice(x, obj[chartType].length);
               // obj[chartType] = sliced;
               // return obj;
-              return update(obj, {[chartType]: {$set: sliced}})
-            })
-        },
-        days: {
-          $set: Array(allChartData0.days.length).fill().map((x,i)=> {
+              // return update(obj, {[chartType]: {$set: sliced}})
+              return {...obj, [chartType]: sliced}
+            }),
+        days: Array(allChartData0.days.length).fill().map((x,i)=> {
               return "Day "+i;
-          })
-        }
-      });
+        })
+      };
     } else {
       return allChartData0;
     }
@@ -281,21 +280,18 @@ class CoronaChart extends React.Component {
   movingAverageView(allChartData0) {
     var chartType = this.props.chartType;
     if (this.state.isMAView) {
-      return update(allChartData0, {
-        numbers: {
-          $set: allChartData0.numbers
+      return {...allChartData0,
+        numbers: allChartData0.numbers
             .filter(x => x[chartType] !== undefined)
             .map((obj) => {
               var newList = sma(obj[chartType], 7).map((x) => {
                 return parseFloat(x);
               });
-              return update(obj, {[chartType]: {$set: newList}})
-            })
-        },
-        days: {
-          $set: allChartData0.days.slice(6, allChartData0.days.length-1)
-        }
-      });
+              // return update(obj, {[chartType]: {$set: newList}})
+              return {...obj, [chartType]: newList}
+            }),
+        days: allChartData0.days.slice(6, allChartData0.days.length-1)
+      };
     } else {
       return allChartData0;
     }
@@ -304,9 +300,8 @@ class CoronaChart extends React.Component {
   weekView(allChartData0) {
     var chartType = this.props.chartType;
     if (this.state.isWeekView) {
-      return update(allChartData0, {
-        numbers: {
-          $set: allChartData0.numbers
+      return {...allChartData0,
+        numbers: allChartData0.numbers
             .filter(x => x[chartType] !== undefined)
             .map((obj) => {
               var old = obj[chartType];
@@ -321,15 +316,13 @@ class CoronaChart extends React.Component {
                   x = x+old[i]
                 }
               }
-              return update(obj, {[chartType]: {$set: newList}})
-            })
-        },
-        days: {
-          $set: Array(Math.round(allChartData0.days.length/7)).fill().map((x,i)=> {
+              // return update(obj, {[chartType]: {$set: newList}})
+              return {...obj, [chartType]: newList}
+            }),
+        days: Array(Math.round(allChartData0.days.length/7)).fill().map((x,i)=> {
               return "Week "+(i+1);
-          })
-        }
-      });
+        })
+      };
     } else {
       return allChartData0;
     }
@@ -338,18 +331,17 @@ class CoronaChart extends React.Component {
   perCapitaView(allChartData0) {
     var chartType = scatterDataType(this.props.chartType);
     if (this.state.isPerCapitaView) {
-      return update(allChartData0, {
-        numbers: {
-          $set: allChartData0.numbers
+      return {...allChartData0,
+        numbers: allChartData0.numbers
             .filter(x => x[chartType] !== undefined)
             .map((obj) => {
               var perCapitaList = obj[chartType].map((x) => {
                 return x / obj.population * 1000000;
               });
-              return update(obj, {[chartType]: {$set: perCapitaList}})
+              // return update(obj, {[chartType]: {$set: perCapitaList}})
+              return {...obj, [chartType]: perCapitaList}
             })
-        }
-      });
+      };
     } else {
       return allChartData0;
     }

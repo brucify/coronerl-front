@@ -22,7 +22,6 @@
     "gatsby": "^2.20.15",
     "gatsby-plugin-google-gtag": "^1.2.1",
     "gatsby-plugin-react-helmet": "^3.2.1",
-    "immutability-helper": "^3.0.2",
     "material-ui-icons": "^1.0.0-beta.36",
     "react": "^16.13.1",
     "react-chartjs-2": "^2.9.0",
