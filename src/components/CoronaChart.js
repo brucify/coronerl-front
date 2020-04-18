@@ -116,7 +116,7 @@ class CoronaChart extends React.Component {
     switch (this.props.drawerItem) {
       case "USA":
         style = { height: "140vh"
-                , maxHeight: "1900px"
+                , maxHeight: "900px"
                 };
         break;
       case "Poland":
@@ -130,11 +130,11 @@ class CoronaChart extends React.Component {
                 };
         break;
       default:
-        style = { height: "115vh"
-                , maxHeight: "700px"
-                }
+        style = { height: "110vh"
+                , maxHeight: "800px"
+                };
     }
-    
+
     return (
       <Card className="chart-section" variant="outlined">
         <CardContent>

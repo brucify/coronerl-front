@@ -10,18 +10,18 @@ import InfoIcon from '@material-ui/icons/Info';
 import CoronaDrawer from '../components/CoronaDrawer'
 
 const drawerItems = [ "Global"
+                    , 'USA'
                     , "Sweden"
                     , "Poland"
-                    , 'USA'
                     , "About this site"
                     ];
 
 const drawerHref = (text) => {
   switch (text) {
     case drawerItems[0]: return "/"
-    case drawerItems[1]: return "/sweden"
-    case drawerItems[2]: return "/poland"
-    case drawerItems[3]: return "/usa"
+    case drawerItems[1]: return "/usa"
+    case drawerItems[2]: return "/sweden"
+    case drawerItems[3]: return "/poland"
     case drawerItems[drawerItems.length-1]: return "/about"
     default:                                return "/"
   }
