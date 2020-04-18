@@ -12,7 +12,7 @@ import CoronaDrawer from '../components/CoronaDrawer'
 const drawerItems = [ "Global"
                     , "Sweden"
                     , "Poland"
-                    // , 'USA'
+                    , 'USA'
                     , "About this site"
                     ];
 
@@ -21,8 +21,9 @@ const drawerHref = (text) => {
     case drawerItems[0]: return "/"
     case drawerItems[1]: return "/sweden"
     case drawerItems[2]: return "/poland"
-    case drawerItems[3]: return "/about"
-    default:             return "/"
+    case drawerItems[3]: return "/usa"
+    case drawerItems[drawerItems.length-1]: return "/about"
+    default:                                return "/"
   }
 }
 const drawerIcons = (text) => {
@@ -30,8 +31,9 @@ const drawerIcons = (text) => {
     case drawerItems[0]: return <PublicIcon />
     case drawerItems[1]: return <PublicIcon />
     case drawerItems[2]: return <PublicIcon />
-    case drawerItems[3]: return <InfoIcon />
-    default:             return <InfoIcon />
+    case drawerItems[3]: return <PublicIcon />
+    case drawerItems[drawerItems.length-1]: return <InfoIcon />
+    default:                                return <InfoIcon />
   }
 }
 

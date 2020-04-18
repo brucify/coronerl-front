@@ -105,17 +105,17 @@ function apiUrl(key) {
     if (process.env.NODE_ENV === 'production') {
       switch (key) {
         case "Global":
-          return "https://api.coronastats.nu/global";
+          return "https://api.covid19curves.nu/global";
         case "GlobalId":
-          return "https://api.coronastats.nu/global";
+          return "https://api.covid19curves.nu/global";
         case "Sweden":
-          return "https://api.coronastats.nu/sweden";
+          return "https://api.covid19curves.nu/sweden";
         case "Poland":
-          return "https://api.coronastats.nu/poland";
-        case "Datasets":
-          return "https://api.coronastats.nu/dataset";
+          return "https://api.covid19curves.nu/poland";
+        case "USA":
+          return "https://api.covid19curves.nu/usa";
         default:
-          return "https://api.coronastats.nu/global";
+          return "https://api.covid19curves.nu/global";
       }
     } else {
       switch (key) {
@@ -127,8 +127,8 @@ function apiUrl(key) {
           return "http://localhost:8080/sweden";
         case "Poland":
           return "http://localhost:8080/poland";
-        case "Datasets":
-          return "http://localhost:8080/dataset";
+        case "USA":
+          return "http://localhost:8080/usa";
         default:
           return "http://localhost:8080/global";
       }

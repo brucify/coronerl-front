@@ -112,6 +112,29 @@ class CoronaChart extends React.Component {
         />
     }
 
+    let style;
+    switch (this.props.drawerItem) {
+      case "USA":
+        style = { height: "140vh"
+                , maxHeight: "1900px"
+                };
+        break;
+      case "Poland":
+        style = { height: "90vh"
+                , maxHeight: "700px"
+                };
+        break;
+      case "Sweden":
+        style = { height: "90vh"
+                , maxHeight: "700px"
+                };
+        break;
+      default:
+        style = { height: "115vh"
+                , maxHeight: "700px"
+                }
+    }
+    
     return (
       <Card className="chart-section" variant="outlined">
         <CardContent>
@@ -141,7 +164,7 @@ class CoronaChart extends React.Component {
               updateDayZeroView   ={this.updateDayZeroView}
             />
           </div>
-          <div className="chart-container">{chart}</div>
+          <div className="chart-container" style={style}>{chart}</div>
         </CardContent>
         <CardActions>
           {dialog}

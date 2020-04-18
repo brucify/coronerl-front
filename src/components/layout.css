@@ -166,8 +166,8 @@ h6.layout-appbar-text {
 
 .chart-container {
   position: relative;
-  height: 115vh;
-  max-height: 700px;
+  /* height: 115vh;
+  max-height: 700px; */
 }
 
 .add-dataset-dialig {
