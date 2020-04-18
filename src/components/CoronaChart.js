@@ -71,20 +71,45 @@ class CoronaChart extends React.Component {
          position: "bottom"
        }
     };
+
+    /*
+     * chart-specific pre-toggled switches
+     */
     if ([ 'death_vs_pop_density'
         , 'confirmed_vs_pop_density'
         ].includes(this.props.chartType)) {
       this.isLogScaleView = true;
     }
     if (this.props.drawerItem === "Global") {
+      if ([ 'death'
+          ].includes(this.props.chartType)) {
+        this.isLogScaleView      = true;
+        this.state.isDayZeroView = true;
+      }
       if ([ 'death_daily'
           , 'confirmed_daily'
           ].includes(this.props.chartType)) {
         this.isLogScaleView      = true;
-        this.state.isWeekView    = true;
+        this.state.isMAView      = true;
         this.state.isDayZeroView = true;
-        if (['confirmed_daily'].includes(this.props.chartType)) {
-          this.state.dayZaroNum    = 30;
+      }
+      if ([ 'confirmed_daily'
+          , 'confirmed'
+          , 'active'
+          ].includes(this.props.chartType)) {
+        this.state.dayZaroNum    = 20;
+      } else {
+        this.state.dayZaroNum    = 2;
+      }
+    }
+    if (this.props.drawerItem === "Sweden") {
+      if ([ 'confirmed_daily'
+          , 'confirmed'
+          ].includes(this.props.chartType)) {
+        this.state.isMAView      = true;
+        this.state.isDayZeroView = true;
+        if ([ 'confirmed' ].includes(this.props.chartType)) {
+          this.isLogScaleView = true;
         }
       }
     }
@@ -264,13 +289,6 @@ class CoronaChart extends React.Component {
               var newList = sma(obj[chartType], 7).map((x) => {
                 return parseFloat(x);
               });
-              if (obj.name === "Sweden") {
-                console.log("old: "+chartType);
-                console.log(obj[chartType]);
-                console.log("sma: "+chartType);
-                console.log(newList);
-              }
-
               return update(obj, {[chartType]: {$set: newList}})
             })
         },
