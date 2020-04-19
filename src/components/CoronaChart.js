@@ -87,6 +87,9 @@ class CoronaChart extends React.Component {
         this.state.isMAView      = true;
         this.state.isDayZeroView = true;
       }
+      if ([ 'confirmed_vs_pop_density' ].includes(this.props.chartType)) {
+        this.isLogScaleView = true;
+      }
     }
     if (this.props.drawerItem === "Poland") {
       if ([ 'confirmed_daily'
@@ -661,27 +664,29 @@ function chartDataForScatter(allChartData, chartType, chartColors) {
   let datasets;
   if(!allChartData.initial_data) {
     datasets =
-      allChartData.numbers.map((o, index) => {
-        var popDensity = o.population / o.land_area;
-        var type = scatterDataType(chartType)
-        return {
-          label: o.name,
-          fill: true,
-          backgroundColor: nextColor(chartColors, index),
-          pointBorderColor: nextColor(chartColors, index),
-          pointBackgroundColor: nextColor(chartColors, index),
-          pointBorderWidth: 3,
-          pointHoverRadius: 15,
-          pointHoverBackgroundColor: nextColor(chartColors, index),
-          pointHoverBorderColor: nextColor(chartColors, index),
-          pointHoverBorderWidth: 2,
-          pointRadius: 8,
-          pointHitRadius: 10,
-          data: [
-            { x: popDensity, y: o[type][o[type].length-1] }
-          ]
-        };
-      });
+      allChartData.numbers
+        .filter((o) => o[scatterDataType(chartType)] !== undefined)
+        .map((o, index) => {
+          var popDensity = o.population / o.land_area;
+          var type = scatterDataType(chartType)
+          return {
+            label: o.name,
+            fill: true,
+            backgroundColor: nextColor(chartColors, index),
+            pointBorderColor: nextColor(chartColors, index),
+            pointBackgroundColor: nextColor(chartColors, index),
+            pointBorderWidth: 3,
+            pointHoverRadius: 15,
+            pointHoverBackgroundColor: nextColor(chartColors, index),
+            pointHoverBorderColor: nextColor(chartColors, index),
+            pointHoverBorderWidth: 2,
+            pointRadius: 8,
+            pointHitRadius: 10,
+            data: [
+              { x: popDensity, y: o[type][o[type].length-1] }
+            ]
+          };
+        });
   } else {
     datasets = [{
       label: 'Global',
