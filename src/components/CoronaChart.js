@@ -68,6 +68,14 @@ class CoronaChart extends React.Component {
         this.isLogScaleView = true;
       }
     }
+    if (this.props.drawerItem === "USA") {
+      if ([ 'death_daily' ].includes(this.props.chartType)) {
+        this.state.dayZaroNum    = 3;
+        this.isLogScaleView      = true;
+        this.state.isMAView      = true;
+        this.state.isDayZeroView = true;
+      }
+    }
     if (this.props.drawerItem === "Sweden") {
       this.state.dayZaroNum    = 1;
       if ([ 'confirmed' ].includes(this.props.chartType)) {
@@ -82,6 +90,8 @@ class CoronaChart extends React.Component {
     }
     if (this.props.drawerItem === "Poland") {
       if ([ 'confirmed_daily'
+          , 'death_daily'
+          , 'recovered_daily'
           , 'net_daily'
           ].includes(this.props.chartType)) {
         this.state.isMAView      = true;
@@ -131,7 +141,7 @@ class CoronaChart extends React.Component {
         break;
       default:
         style = { height: "110vh"
-                , maxHeight: "800px"
+                , maxHeight: "700px"
                 };
     }
 
@@ -178,6 +188,7 @@ class CoronaChart extends React.Component {
       allChartData: result,
       datasets: result.countries
     });
+    this.hideDataset("US");
     // this.hideDataset("China");
     // TODO A/B testing
     // if (hasLangCode(["sv","sv-se"])) {
