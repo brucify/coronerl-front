@@ -32,6 +32,7 @@ const IndexPage = () => (
     <div className="copyright-section">
       <p>Data source: <OutboundLink href="https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6">Center for Systems Science and Engineering at Johns Hopkins University</OutboundLink></p>
       <p>Population data: <OutboundLink href="https://www.worldometers.info/world-population/population-by-country/">Worldometers</OutboundLink></p>
+      <p>Land area: <OutboundLink href="https://www.worldometers.info/geography/largest-countries-in-the-world/">Worldometers</OutboundLink></p>
       <CoronaFooter />
     </div>
   </Layout>
