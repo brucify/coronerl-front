@@ -15,9 +15,7 @@ class CoronaChart extends React.Component {
   constructor(props) {
     super(props);
     this.state =
-      { allChartData:    this.props.allChartData
-      , datasets:        []
-      , isDayZeroView:   false
+      { isDayZeroView:   false
       , isPerCapitaView: false
       , isWeekView:      false
       , isMAView:        false
@@ -114,13 +112,13 @@ class CoronaChart extends React.Component {
   render() {
     var title = makeTitle(this.props.chartType);
     var chart = makeChart(this.chartReference,
-                          this.yieldChartData(this.state.allChartData),
+                          this.yieldChartData(this.props.allChartData),
                           this.props.chartType);
     let dialog;
     if (this.props.drawerItem === "Global") {
       dialog =
         <CoronaDialog
-          datasets={this.state.datasets}
+          datasets={this.props.datasets}
           fetchForCountry={this.props.fetchForCountry}
         />
     }
@@ -186,66 +184,34 @@ class CoronaChart extends React.Component {
     )
   }
 
-  updateWithGlobalPreset(result) {
-    this.setState({
-      allChartData: result,
-      datasets: result.countries
-    });
-    this.hideDataset("US");
-    // this.hideDataset("China");
-    // TODO A/B testing
-    // if (hasLangCode(["sv","sv-se"])) {
-    //   this.showOnlyDataset([ "Sweden"
-    //                        , "Norway"
-    //                        , "Denmark"
-    //                        , "Finland"
-    //                        , "United Kingdom"
-    //                        ]);
-    // }
-    // this.hideRandomDataset();
-  }
-
-  updateWithNewDataset(result) {
-    this.hiddenLabels = this.getCurrentHiddenLabels();
-
-    var oldCountries = this.state.allChartData.numbers.map((x) => x.name);
-    result.numbers.forEach((x, i) => {
-      if (!oldCountries.includes(x.name)) {
-        this.setState({
-          allChartData: {...this.state.allChartData, numbers: [...this.state.allChartData.numbers, x]}
-        });
-      }
-    });
-  }
-
   toggleLogScaleView() {
     this.isLogScaleView = !this.isLogScaleView;
     this.logScaleView();
   }
 
   toggleDayZeroView() {
-    this.hiddenLabels = this.getCurrentHiddenLabels();
+    this.setCurrentHiddenLabels();
     this.setState({ isDayZeroView: !this.state.isDayZeroView });
   }
 
   toggleMAView() {
-    this.hiddenLabels = this.getCurrentHiddenLabels();
+    this.setCurrentHiddenLabels();
     this.setState({ isMAView: !this.state.isMAView });
   }
 
   toggleWeekView() {
-    this.hiddenLabels = this.getCurrentHiddenLabels();
+    this.setCurrentHiddenLabels();
     this.setState({ isWeekView: !this.state.isWeekView });
   }
 
   togglePerCapitaView() {
-    this.hiddenLabels = this.getCurrentHiddenLabels();
+    this.setCurrentHiddenLabels();
     this.setState({ isPerCapitaView: !this.state.isPerCapitaView });
   }
 
   updateDayZeroView(integer) {
     if (this.state.isDayZeroView) {
-      this.hiddenLabels = this.getCurrentHiddenLabels();
+      this.setCurrentHiddenLabels();
       this.setState({ dayZaroNum: integer });
     }
   }
@@ -487,7 +453,7 @@ class CoronaChart extends React.Component {
     var chart = this.chartReference.current.chartInstance;
     var datasets0 = chart.data.datasets;
     var datasetLabels =
-      [...this.state.allChartData.numbers]
+      [...this.props.allChartData.numbers]
         .sort(sortFun)
         .filter((x) => x.name !== "China")
         .slice(0, amount)
@@ -504,7 +470,7 @@ class CoronaChart extends React.Component {
     chart.update();
   }
 
-  getCurrentHiddenLabels() {
+  setCurrentHiddenLabels() {
     var chart = this.chartReference.current.chartInstance;
     var datasets = chart.data.datasets;
 
@@ -515,7 +481,7 @@ class CoronaChart extends React.Component {
         labelList.push(datasets[i].label)
       }
     }
-    return labelList;
+    this.hiddenLabels = labelList;
   }
 
   hideDataset(countryName) {

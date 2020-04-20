@@ -14,6 +14,9 @@ const initialChartData = {
 class CoronaChartGroup extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { allChartData: initialChartData
+                 , datasets:     []
+                 };
     this.chartReference = React.createRef();
     this.fetchForCountry = this.fetchForCountry.bind(this);
   }
@@ -29,7 +32,8 @@ class CoronaChartGroup extends React.Component {
                chartType={o.type}
                drawerItem={this.props.drawerItem}
                topAndBottomNum={this.props.topAndBottomNum}
-               allChartData={initialChartData}
+               allChartData={this.state.allChartData}
+               datasets={this.state.datasets}
                fetchForCountry={this.fetchForCountry}
              />
     });
@@ -56,10 +60,11 @@ class CoronaChartGroup extends React.Component {
           //   }
           // });
           mendForCn(result);
-          this.props.chartTypes.map((o) => {
-            o.ref.current.updateWithGlobalPreset(result);
-            return o;
-          });
+          this.updateWithGlobalPreset(result);
+          // this.props.chartTypes.map((o) => {
+          //   o.ref.current.updateWithGlobalPreset(result);
+          //   return o;
+          // });
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -73,6 +78,28 @@ class CoronaChartGroup extends React.Component {
       );
   }
 
+  updateWithGlobalPreset(result) {
+    this.setState({
+      allChartData: result,
+      datasets: result.countries
+    });
+    this.props.chartTypes.map((o) => {
+      o.ref.current.hideDataset("US");
+      // o.ref.current.hideDataset("China");
+      // TODO A/B testing
+      // if (hasLangCode(["sv","sv-se"])) {
+      //   o.ref.current.showOnlyDataset([ "Sweden"
+      //                        , "Norway"
+      //                        , "Denmark"
+      //                        , "Finland"
+      //                        , "United Kingdom"
+      //                        ]);
+      // }
+      // o.ref.current.hideRandomDataset();
+      return o;
+    });
+  }
+
   fetchForCountry(ids) {
     var url = apiUrl("GlobalId") + "/" + ids.join(",");
     console.log(url);
@@ -82,9 +109,10 @@ class CoronaChartGroup extends React.Component {
         (result) => {
           mendForCn(result);
           this.props.chartTypes.map((o) => {
-            o.ref.current.updateWithNewDataset(result);
+            o.ref.current.setCurrentHiddenLabels();
             return o;
           });
+          this.updateWithNewDataset(result);
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -96,6 +124,17 @@ class CoronaChartGroup extends React.Component {
           });
         }
       );
+  }
+
+  updateWithNewDataset(result) {
+    var oldCountries = this.state.allChartData.numbers.map((x) => x.name);
+    result.numbers.forEach((x, i) => {
+      if (!oldCountries.includes(x.name)) {
+        this.setState({
+          allChartData: {...this.state.allChartData, numbers: [...this.state.allChartData.numbers, x]}
+        });
+      }
+    });
   }
 }
 
