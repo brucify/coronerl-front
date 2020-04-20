@@ -83,7 +83,7 @@ class CoronaChartGroup extends React.Component {
       allChartData: result,
       datasets: result.countries
     });
-    this.props.chartTypes.map((o) => {
+    this.props.chartTypes.forEach((o) => {
       o.ref.current.hideDataset("US");
       // o.ref.current.hideDataset("China");
       // TODO A/B testing
@@ -96,7 +96,7 @@ class CoronaChartGroup extends React.Component {
       //                        ]);
       // }
       // o.ref.current.hideRandomDataset();
-      return o;
+      // return o;
     });
   }
 
@@ -108,9 +108,8 @@ class CoronaChartGroup extends React.Component {
       .then(
         (result) => {
           mendForCn(result);
-          this.props.chartTypes.map((o) => {
+          this.props.chartTypes.forEach((o) => {
             o.ref.current.setCurrentHiddenLabels();
-            return o;
           });
           this.updateWithNewDataset(result);
         },
