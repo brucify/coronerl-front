@@ -1,6 +1,6 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
-// import {Bar} from 'react-chartjs-2';
+import {Bar} from 'react-chartjs-2';
 import {Scatter} from 'react-chartjs-2';
 import sma from 'sma';
 import Card from '@material-ui/core/Card';
@@ -558,7 +558,7 @@ function makeTitle(chartType) {
       title = "COVID-19 reported vs deaths vs in ICU";
       break;
     case "death_vs_icu_daily":
-      title = "COVID-19 new cases per day";
+      title = "COVID-19 new cases per day in Sweden";
       break;
     case "death_vs_pop_density":
       title = "COVID-19 deaths vs population density";
@@ -611,23 +611,36 @@ function makeChart(chartReference, allChartData, chartType) {
         redraw
       />
     );
-  // } else if ([ 'death_vs_icu_daily' ].includes(chartType)) {
-  //   const chartOptions = {
-  //     maintainAspectRatio: false,
-  //     legend: {
-  //       display: true,
-  //       align: "start",
-  //       position: "bottom"
-  //     }
-  //   };
-  //   return (
-  //    <Bar
-  //      ref={chartReference}
-  //      data={chartDataForLine(allChartData, chartType, chartColors)}
-  //      options={chartOptions}
-  //      redraw
-  //    />
-  //   );
+  } else if ([ 'death_vs_icu_daily'
+             , 'death_vs_icu' 
+             ].includes(chartType)) {
+    const chartOptions = {
+      maintainAspectRatio: false,
+      scales: {
+        yAxes: [{
+          id: 'A',
+          type: 'linear',
+          position: 'left',
+        }, {
+          id: 'B',
+          type: 'linear',
+          position: 'right'
+        }]
+      },
+      legend: {
+        display: true,
+        align: "start",
+        position: "bottom"
+      }
+    };
+    return (
+     <Bar
+       ref={chartReference}
+       data={chartDataForBar(allChartData, chartType, chartColors)}
+       options={chartOptions}
+       redraw
+     />
+    );
   } else {
     const chartOptions = {
       maintainAspectRatio: false,
@@ -819,10 +832,22 @@ function chartDataForLine(allChartData, chartType, chartColors) {
         var newColor = nextColor(chartColors, index);
         switch (x.name) {
           case "China":
-            return chartDataSet(x.name, x[chartType], 'rgb(211,211,211)');
+            return chartDatasetForLine(x.name, x[chartType], 'rgb(211,211,211)');
           default:
-            return chartDataSet(x.name, x[chartType], newColor);
+            return chartDatasetForLine(x.name, x[chartType], newColor);
         }
+      })
+  }
+}
+
+function chartDataForBar(allChartData, chartType, chartColors) {
+  return {
+    labels: allChartData.days,
+    datasets: allChartData.numbers
+      .filter(x => x[chartType] !== undefined)
+      .map((x, index) => {
+        var newColor = nextColor(chartColors, index);
+        return chartDatasetForBar(x.name, x[chartType], newColor);
       })
   }
 }
@@ -833,7 +858,25 @@ function nextColor(chartColors, index) {
   return chartColors[colorName];
 }
 
-function chartDataSet(country, data, newColor) {
+function yAxisID(label) {
+  switch (label) {
+    case "Kumulativa_fall": return "B";
+    default: return "A";
+
+  }
+}
+
+function chartDatasetForBar(country, data, newColor) {
+  return {
+    label: country,
+    yAxisID: yAxisID(country),
+    data: data, //[65 , 59, 80, 81, 56, 55, 40]
+    backgroundColor: newColor,
+    borderColor: newColor,
+  }
+}
+
+function chartDatasetForLine(country, data, newColor) {
   return {
     label: country,
     data: data, //[65 , 59, 80, 81, 56, 55, 40]

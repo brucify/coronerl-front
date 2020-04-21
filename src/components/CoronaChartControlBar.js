@@ -21,6 +21,8 @@ export default (props) => {
 
     if (![ 'death_vs_pop_density'
          , 'confirmed_vs_pop_density'
+         , 'death_vs_icu'
+         , 'death_vs_icu_daily'
          ].includes(props.chartType)) {
       let number = props.topAndBottomNum ? props.topAndBottomNum : 15;
       topButton =
@@ -50,6 +52,7 @@ export default (props) => {
         , 'death_daily'
         , 'recovered_daily'
         , 'net_daily'
+        , 'death_vs_icu_daily'
         ].includes(props.chartType)) {
       weekViewSwitch =
         <div className="chart-button-right">
@@ -61,7 +64,7 @@ export default (props) => {
         </div>
     }
 
-    if (true) {
+    if (![ 'death_vs_icu_daily' ].includes(props.chartType)) {
       logSwitch =
         <div className="chart-button-right">
           <FormControlLabel
