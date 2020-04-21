@@ -632,17 +632,21 @@ function makeChart(chartReference, allChartData, chartType) {
     const chartOptions = {
       maintainAspectRatio: false,
       legend: {
-         display: true,
-         align: "start",
-         position: "bottom"
-       }
+        display: true,
+        align: "start",
+        position: "bottom"
+      },
     };
     return (
       <Line
         ref={chartReference}
         data={chartDataForLine(allChartData, chartType, chartColors)}
         options={chartOptions}
-        getElementAtEvent={(elems) => {hideDatasetByIndex(chartReference, elems[0], chartColors, chartType);}}
+        getElementAtEvent={(elems) => {
+          if (!isMobile()) {
+            hideDatasetByIndex(chartReference, elems[0], chartColors, chartType);
+          }
+        }}
         redraw
       />
     );
@@ -652,7 +656,6 @@ function makeChart(chartReference, allChartData, chartType) {
 function hideDatasetByIndex(chartReference, elem, chartColors, chartType) {
   var chart = chartReference.current.chartInstance;
   var datasets = chart.data.datasets;
-
   if (elem !== undefined) {
     var clickedIndex = elem._datasetIndex;
     datasets.forEach((dataset, i) => {
@@ -871,4 +874,20 @@ export function gaEvent(eventName) {
         'event_label' : eventName
       });
   }
+}
+
+function isMobile() {
+  const toMatch = [
+          /Android/i,
+          /webOS/i,
+          /iPhone/i,
+          /iPad/i,
+          /iPod/i,
+          /BlackBerry/i,
+          /Windows Phone/i
+      ];
+
+  return toMatch.some((toMatchItem) => {
+    return navigator.userAgent.match(toMatchItem);
+  });
 }
