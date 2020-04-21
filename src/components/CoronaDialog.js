@@ -8,6 +8,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import {gaEvent} from '../components/CoronaChart'
+
+
 export default function CoronaDialog(props) {
   const [open, setOpen] = React.useState(false);
   const [selectedValues, setSelectedValues] = React.useState([]);
@@ -23,6 +26,7 @@ export default function CoronaDialog(props) {
 
   const handleAdd = () => {
     console.log(selectedValues);
+    gaEvent("Add Datasets: "+selectedValues.map((x) => x.name).join(","));
     props.fetchForCountry(selectedValues.map((x) => x.id));
     setOpen(false);
     setSelectedValues([]);

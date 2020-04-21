@@ -1,5 +1,6 @@
 import React from 'react';
 import {Line} from 'react-chartjs-2';
+// import {Bar} from 'react-chartjs-2';
 import {Scatter} from 'react-chartjs-2';
 import sma from 'sma';
 import Card from '@material-ui/core/Card';
@@ -103,7 +104,7 @@ class CoronaChart extends React.Component {
   componentDidUpdate() {
     if (this.hiddenLabels !== undefined) {
       this.hiddenLabels.forEach((label) => {
-        this.hideDataset(label);
+        this.hideDatasetByName(label);
       });
     }
     this.logScaleView();
@@ -142,7 +143,7 @@ class CoronaChart extends React.Component {
         break;
       default:
         style = { height: "110vh"
-                , maxHeight: "700px"
+                , maxHeight: "650px"
                 };
     }
 
@@ -186,32 +187,38 @@ class CoronaChart extends React.Component {
 
   toggleLogScaleView() {
     this.isLogScaleView = !this.isLogScaleView;
+    gaEvent((!this.isLogScaleView ? "on Log " : "off Log ") + this.props.chartType);
     this.logScaleView();
   }
 
   toggleDayZeroView() {
     this.setCurrentHiddenLabels();
+    gaEvent((!this.state.isDayZeroView ? "on Day 0 " : "off Day 0 ") + this.props.chartType);
     this.setState({ isDayZeroView: !this.state.isDayZeroView });
   }
 
   toggleMAView() {
     this.setCurrentHiddenLabels();
+    gaEvent((!this.state.isMAView ? "on 7-Day MA " : "off 7-Day MA ") + this.props.chartType);
     this.setState({ isMAView: !this.state.isMAView });
   }
 
   toggleWeekView() {
     this.setCurrentHiddenLabels();
+    gaEvent((!this.state.isWeekView ? "on Week " : "off Week ") + this.props.chartType);
     this.setState({ isWeekView: !this.state.isWeekView });
   }
 
   togglePerCapitaView() {
     this.setCurrentHiddenLabels();
+    gaEvent((!this.state.isPerCapitaView ? "on Per 1M Capita " : "off Per 1M Capita ") + this.props.chartType);
     this.setState({ isPerCapitaView: !this.state.isPerCapitaView });
   }
 
   updateDayZeroView(integer) {
     if (this.state.isDayZeroView) {
       this.setCurrentHiddenLabels();
+      gaEvent(("Since "+integer+" " +sinceWord(this.props.chartType))+" "+this.props.chartType);
       this.setState({ dayZaroNum: integer });
     }
   }
@@ -484,7 +491,7 @@ class CoronaChart extends React.Component {
     this.hiddenLabels = labelList;
   }
 
-  hideDataset(countryName) {
+  hideDatasetByName(countryName) {
     var chart = this.chartReference.current.chartInstance;
     var datasets = chart.data.datasets;
     for (var i=0; i<datasets.length; i++) {
@@ -604,6 +611,23 @@ function makeChart(chartReference, allChartData, chartType) {
         redraw
       />
     );
+  // } else if ([ 'death_vs_icu_daily' ].includes(chartType)) {
+  //   const chartOptions = {
+  //     maintainAspectRatio: false,
+  //     legend: {
+  //       display: true,
+  //       align: "start",
+  //       position: "bottom"
+  //     }
+  //   };
+  //   return (
+  //    <Bar
+  //      ref={chartReference}
+  //      data={chartDataForLine(allChartData, chartType, chartColors)}
+  //      options={chartOptions}
+  //      redraw
+  //    />
+  //   );
   } else {
     const chartOptions = {
       maintainAspectRatio: false,
@@ -618,9 +642,33 @@ function makeChart(chartReference, allChartData, chartType) {
         ref={chartReference}
         data={chartDataForLine(allChartData, chartType, chartColors)}
         options={chartOptions}
+        getElementAtEvent={(elems) => {hideDatasetByIndex(chartReference, elems[0], chartColors, chartType);}}
         redraw
       />
     );
+  }
+}
+
+function hideDatasetByIndex(chartReference, elem, chartColors, chartType) {
+  var chart = chartReference.current.chartInstance;
+  var datasets = chart.data.datasets;
+
+  if (elem !== undefined) {
+    var clickedIndex = elem._datasetIndex;
+    datasets.forEach((dataset, i) => {
+      if (i === clickedIndex) {
+        dataset.borderColor = nextColor(chartColors, i);
+        gaEvent(dataset.label+ " " + chartType);
+      } else {
+        dataset.borderColor = 'rgba(0, 0, 0, 0.1)';
+      }
+    });
+    chart.update();
+  } else {
+    datasets.forEach((dataset, i) => {
+      dataset.borderColor = nextColor(chartColors, i);
+    });
+    chart.update();
   }
 }
 
@@ -814,3 +862,13 @@ function chartDataSet(country, data, newColor) {
 //   var cond2 = (list).includes(userLang.toLowerCase());
 //   return (cond1 || cond2);
 // }
+
+export function gaEvent(eventName) {
+  if (process.env.NODE_ENV === 'production') {
+    typeof window !== "undefined" && window //.gtag("event", "click", { name: eventName });
+      .gtag('event', 'click', {
+        'event_category' : 'general',
+        'event_label' : eventName
+      });
+  }
+}

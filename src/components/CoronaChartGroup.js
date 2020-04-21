@@ -84,8 +84,8 @@ class CoronaChartGroup extends React.Component {
       datasets: result.countries
     });
     this.props.chartTypes.forEach((o) => {
-      o.ref.current.hideDataset("US");
-      // o.ref.current.hideDataset("China");
+      o.ref.current.hideDatasetByName("US");
+      // o.ref.current.hideDatasetByName("China");
       // TODO A/B testing
       // if (hasLangCode(["sv","sv-se"])) {
       //   o.ref.current.showOnlyDataset([ "Sweden"
