@@ -91,12 +91,24 @@ class CoronaChart extends React.Component {
       }
     }
     if (this.props.drawerItem === "Poland") {
-      if ([ 'confirmed_daily'
-          , 'death_daily'
+      if ([ 'death_daily'
           , 'recovered_daily'
+          ].includes(this.props.chartType)) {
+        this.state.dayZaroNum    = 1;
+        this.state.isMAView      = true;
+        this.state.isDayZeroView = true;
+      }
+      if ([ 'active'
+          ].includes(this.props.chartType)) {
+        this.state.dayZaroNum    = 50;
+        this.state.isDayZeroView = true;
+      }
+      if ([ 'confirmed_daily'
           , 'net_daily'
           ].includes(this.props.chartType)) {
+        this.state.dayZaroNum    = 10;
         this.state.isMAView      = true;
+        this.state.isDayZeroView = true;
       }
     }
   }
@@ -407,6 +419,7 @@ class CoronaChart extends React.Component {
         chart.getDatasetMeta(i).hidden = null;
       });
     }
+    gaEvent((allHidden ? "Show All " : "Hide All ") + this.props.chartType);
     chart.update();
   }
 
@@ -442,6 +455,7 @@ class CoronaChart extends React.Component {
         return 0;
       }
     });
+    gaEvent("Top " + amount + " "+ this.props.chartType);
   }
 
   showBottomTen(amount) {
@@ -454,6 +468,7 @@ class CoronaChart extends React.Component {
         return 0;
       }
     });
+    gaEvent("Bottom " + amount + " "+ this.props.chartType);
   }
 
   showSelectedDatasets(amount, sortFun) {
@@ -612,7 +627,7 @@ function makeChart(chartReference, allChartData, chartType) {
       />
     );
   } else if ([ 'death_vs_icu_daily'
-             , 'death_vs_icu' 
+             , 'death_vs_icu'
              ].includes(chartType)) {
     const chartOptions = {
       maintainAspectRatio: false,
