@@ -1,5 +1,4 @@
 import React from 'react';
-import {Chart} from 'react-chartjs-2';
 import {Line} from 'react-chartjs-2';
 import {Bar} from 'react-chartjs-2';
 import {Scatter} from 'react-chartjs-2';
@@ -69,20 +68,27 @@ class CoronaChart extends React.Component {
       }
     }
     if (this.props.drawerItem === "USA") {
-      if ([ 'death_daily' ].includes(this.props.chartType)) {
+      if ([ 'death_daily'
+          ].includes(this.props.chartType)) {
         this.state.dayZaroNum    = 3;
         this.isLogScaleView      = true;
+        this.state.isMAView      = true;
+        this.state.isDayZeroView = true;
+      }
+      if ([ 'confirmed_daily'
+          ].includes(this.props.chartType)) {
+        this.state.dayZaroNum    = 3;
         this.state.isMAView      = true;
         this.state.isDayZeroView = true;
       }
     }
     if (this.props.drawerItem === "Sweden") {
       this.state.dayZaroNum    = 1;
-      if ([ 'confirmed' ].includes(this.props.chartType)) {
-        this.state.isMAView      = true;
-        this.state.isDayZeroView = true;
-        this.isLogScaleView = true;
-      }
+      // if ([ 'confirmed' ].includes(this.props.chartType)) {
+      //   this.state.isMAView      = true;
+      //   this.state.isDayZeroView = true;
+      //   this.isLogScaleView = true;
+      // }
       if ([ 'confirmed_daily' ].includes(this.props.chartType)) {
         this.state.isMAView      = true;
         this.state.isDayZeroView = true;
@@ -937,11 +943,15 @@ function chartDatasetForLine(country, data, newColor) {
 
 export function gaEvent(eventName) {
   if (process.env.NODE_ENV === 'production') {
-    typeof window !== "undefined" && window //.gtag("event", "click", { name: eventName });
-      .gtag('event', 'click', {
-        'event_category' : 'general',
-        'event_label' : eventName
-      });
+    //.gtag("event", "click", { name: eventName });
+    if (typeof window !== "undefined") {
+      if (window.gtag && typeof(window.gtag) == "function") {
+        window.gtag('event', 'click', {
+          'event_category' : 'general',
+          'event_label' : eventName
+        });
+      }
+    } 
   }
 }
 

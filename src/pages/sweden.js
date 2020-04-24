@@ -8,8 +8,8 @@ import CoronaTopBar from '../components/CoronaTopBar'
 import CoronaChartGroup from '../components/CoronaChartGroup'
 
 const chartTypes = [ {type: "death_vs_icu_daily",    ref: React.createRef()}
-                   , {type: "confirmed",       ref: React.createRef()}
                    , {type: "confirmed_daily", ref: React.createRef()}
+                   , {type: "confirmed",       ref: React.createRef()}
                    , {type: "confirmed_vs_pop_density", ref: React.createRef()}
                    , {type: "death_vs_icu",    ref: React.createRef()}
                    ];
